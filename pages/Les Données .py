@@ -15,7 +15,7 @@ import streamlit as st
 
 ##Variables#####################
 
-image = 'C:/Users/meedz/Desktop/Stage/site/data/logo.jpg'
+image = 'data/logo.jpg'
 
 
 @st.cache_data  
@@ -34,7 +34,7 @@ st.set_page_config(page_title="Description des Données", layout="centered", pag
 st.title("🌍 Analyse des Prix des Produits & Services au Maroc (2017-2024)")
 
 # Chargement des données
-df = load_data("C:/Users/meedz/Desktop/Stage/site/data/dataset.csv")
+df = load_data("data/dataset.csv")
 
 st.divider()
 
