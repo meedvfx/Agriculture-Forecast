@@ -10,7 +10,7 @@ import streamlit as st
 
 #les variables#########
 
-image = 'C:/Users/meedz/Desktop/Stage/site/data/logo.jpg'
+image = 'data/logo.jpg'
 
 ############################################################################
 
