@@ -22,7 +22,7 @@ def load_data(url):
     df = pd.read_csv(url)
     return df
 
-df = load_data("C:/Users/meedz/Desktop/Stage/site/data/dataset.csv")
+df = load_data("data/dataset.csv")
 
 @st.cache_resource
 def load_model():
