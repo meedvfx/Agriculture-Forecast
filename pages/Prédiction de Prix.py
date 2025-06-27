@@ -29,17 +29,9 @@ MODEL_PATH = "model.pkl"
 # ----------------- Chargement du modèle -----------------
 @st.cache_resource  # Cache le modèle en mémoire pour toutes les sessions
 def load_model():
-    try:
-        # Téléchargement depuis Google Drive
-        gdown.download(MODEL_URL, MODEL_PATH, quiet=True)
-        
-        # Chargement du modèle
-        with open(MODEL_PATH, 'rb') as f:
-            return pickle.load(f)
-    except Exception as e:
-        st.error(f"Erreur de chargement du modèle : {str(e)}")
-        return None
-
+    gdown.download(MODEL_URL, MODEL_PATH, quiet=True)
+    with open(MODEL_PATH, 'rb') as f:
+        return pickle.load(f)    
 model = load_model()
 
 
