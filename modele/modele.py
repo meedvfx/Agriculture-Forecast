@@ -60,5 +60,5 @@ pipe_rf.fit(x_train, y_train)
 
 import pickle
 
-with open(r"C:\users\meedz\desktop\stage\site\modele\model.pkl", "wb") as f:
+with open(r"modele\model.pkl", "wb") as f:
     pickle.dump(pipe_rf, f)
