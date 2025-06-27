@@ -25,3 +25,12 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingRandomSearchCV
 from scipy.stats import randint, uniform
+
+df = load_data("data/dataset.csv")
+
+df['Date'] = pd.to_datetime(df['Date'])
+df['month'] = df['Date'].dt.month
+df['year'] = df['Date'].dt.year
+df['day'] = df['Date'].dt.day
+df = df.drop(columns=['Date'])
+
