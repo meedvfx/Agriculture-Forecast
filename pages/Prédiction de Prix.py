@@ -26,7 +26,7 @@ df = load_data("data/dataset.csv")
 
 @st.cache_resource
 def load_model():
-    with open("C:/users/meedz/desktop/stage/site//modele/model.pkl", "rb") as f:
+    with open("modele/model.pkl", "rb") as f:
         return pickle.load(f)
 
 model = load_model()
