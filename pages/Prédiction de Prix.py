@@ -24,17 +24,27 @@ st.write("Cette application permet de prédire le prix des produits selon la vil
 
 # ----------------- Chargement du modèle -----------------
 # ----------------- Chargement du modèle -----------------
-MODEL_URL = "https://drive.google.com/uc?id=1suV0pYVDSaoxolBODFQhruPvotyxyv9p"
-MODEL_PATH = "model.pkl"
-# ----------------- Chargement du modèle -----------------
-@st.cache_resource  # Cache le modèle en mémoire pour toutes les sessions
+import gdown
+import joblib
+import os
+
+# Configuration
+MODEL_ID = "1qEuXMYeSfXpyas_OYsaAVZ2XHO9sq-Wx"  # Remplacez par votre ID
+MODEL_PATH = "modelprix.joblib"
+
+@st.cache_resource
 def load_model():
-    gdown.download(MODEL_URL, MODEL_PATH, quiet=True)
-    with open(MODEL_PATH, 'rb') as f:
-        return pickle.load(f)    
+    if not os.path.exists(MODEL_PATH):
+        url = f"https://drive.google.com/uc?id={MODEL_ID}"
+        gdown.download(url, MODEL_PATH, quiet=True)
+    
+    try:
+        return joblib.load(MODEL_PATH)
+    except Exception as e:
+        st.error(f"Erreur de chargement : {str(e)}")
+        return None
+
 model = load_model()
-
-
 @st.cache_data  
 def load_data(url):
     df = pd.read_csv(url)
