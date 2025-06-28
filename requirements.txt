@@ -1,6 +1,7 @@
-streamlit>=1.32.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
-numpy>=1.24.4
-pandas>=2.1.4
-scikit-learn>=1.5.0
+streamlit==1.35.0
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==2.2.2
+python-dateutil==2.9.0
