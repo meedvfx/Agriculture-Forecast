@@ -23,32 +23,12 @@ st.title("📊 Prédiction du Prix des Produits")
 st.write("Cette application permet de prédire le prix des produits selon la ville, le produit et la date.")
 
 # ----------------- Chargement du modèle -----------------
-# ----------------- Chargement du modèle -----------------
-import gdown
-import joblib
-import os
-
-# Configuration
-MODEL_ID = "1qEuXMYeSfXpyas_OYsaAVZ2XHO9sq-Wx"  # Remplacez par votre ID
-MODEL_PATH = "modelprix.joblib"
-
 @st.cache_resource
 def load_model():
-    if not os.path.exists(MODEL_PATH):
-        url = f"https://drive.google.com/uc?id={MODEL_ID}"
-        gdown.download(url, MODEL_PATH, quiet=True)
-    
-    try:
-        return joblib.load(MODEL_PATH)
-    except Exception as e:
-        st.error(f"Erreur de chargement : {str(e)}")
-        return None
+    with open("modele/model.pkl", "rb") as f:
+        return pickle.load(f)
 
 model = load_model()
-@st.cache_data  
-def load_data(url):
-    df = pd.read_csv(url)
-    return df
 
 df = load_data("data/dataset.csv")
 
