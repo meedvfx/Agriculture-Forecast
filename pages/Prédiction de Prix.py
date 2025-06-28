@@ -21,6 +21,7 @@ st.set_page_config(page_title="Prédiction de Prix des Produits", layout="center
 st.title("📊 Prédiction du Prix des Produits")
 st.write("Cette application permet de prédire le prix des produits selon la ville, le produit et la date.")
 
+@st.cache_resource
 def load_model():
     with open("modele/model.pkl", "rb") as f:
         return pickle.load(f)
@@ -31,6 +32,7 @@ model = load_model()
 def load_data(url):
     df = pd.read_csv(url)
     return df
+    
 df = load_data("data/dataset.csv")
 
 
