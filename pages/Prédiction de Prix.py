@@ -22,34 +22,11 @@ st.title("📊 Prédiction du Prix des Produits")
 st.write("Cette application permet de prédire le prix des produits selon la ville, le produit et la date.")
 
 # ----------------- Chargement du modèle -----------------
-import streamlit as st
 import joblib
-import os
-from sklearn.base import BaseEstimator
 
-@st.cache_resource  # Cache le modèle pour toutes les sessions
 def load_model():
-    try:
-        model_path = "modelprix.joblib"
-        
-        # Vérifie l'existence du fichier
-        if not os.path.exists(model_path):
-            st.error("Fichier modèle introuvable !")
-            return None
-
-        # Charge le modèle
-        model = joblib.load(model_path)
-        
-        # Vérifie que c'est un modèle scikit-learn valide
-        if not isinstance(model, BaseEstimator):
-            st.error("Le fichier n'est pas un modèle valide")
-            return None
-            
-        return model
-        
-    except Exception as e:
-        st.error(f"Erreur de chargement : {str(e)}")
-        return None
+    with open("modelprix.joblib", "rb") as f:
+        return joblib.load(f)
 
 model = load_model()
 
