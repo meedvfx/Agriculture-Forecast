@@ -21,12 +21,9 @@ st.set_page_config(page_title="Prédiction de Prix des Produits", layout="center
 st.title("📊 Prédiction du Prix des Produits")
 st.write("Cette application permet de prédire le prix des produits selon la ville, le produit et la date.")
 
-# ----------------- Chargement du modèle -----------------
-import joblib
-
 def load_model():
-    with open("modelprix.joblib", "rb") as f:
-        return joblib.load(f)
+    with open("modele/model.pkl", "rb") as f:
+        return pickle.load(f)
 
 model = load_model()
 
