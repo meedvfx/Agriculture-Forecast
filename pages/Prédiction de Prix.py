@@ -27,6 +27,10 @@ def load_model():
 
 model = load_model()
 
+@st.cache_data  
+def load_data(url):
+    df = pd.read_csv(url)
+    return df
 df = load_data("data/dataset.csv")
 
 
