@@ -1,1 +1,7 @@
 *.pkl filter=lfs diff=lfs merge=lfs -text
+*.joblib filter=lfs diff=lfs merge=lfs -text
+\# filter=lfs diff=lfs merge=lfs -text
+Suivi filter=lfs diff=lfs merge=lfs -text
+des filter=lfs diff=lfs merge=lfs -text
+fichiers filter=lfs diff=lfs merge=lfs -text
+.joblib filter=lfs diff=lfs merge=lfs -text
