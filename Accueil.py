@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun 24 14:49:53 2025
 
-@author: meedz
+@author: meedvfx
 """
 
 import streamlit as st
@@ -38,15 +37,12 @@ Cette application permet de :
 - Fournir des outils de prédiction fiables pour la prise de décision stratégique.
 - Favoriser la veille économique territoriale par indicateurs régionaux et nationaux.
 - Soutenir la digitalisation du secteur agricole et la gestion intelligente des données.
-
----
-
-## 🛠️ Bénéfices du projet pour i‑Soft Network
-
 """)
 
 
-# Premier tableau : Bénéfices
+# ▶️ Bénéfices du projet (double module)
+st.write("## 🛠️ Bénéfices du projet pour i‑Soft Network")
+
 data_benefices = {
     "Axe stratégique": [
         "Audit & Conseil",
@@ -55,49 +51,39 @@ data_benefices = {
         "Digitalisation"
     ],
     "Apport du projet": [
-        "Analyses de données économiques pour le conseil stratégique",
-        "Permettre aux équipes internes ou aux partenaires d'accéder à des indicateurs fiables et automatisés",
-        "Offrir aux clients des analyses précises de l'évolution des prix par région et par année",
-        "Outil intelligent facilitant la prise de décision basée sur la data"
+        "Analyses économiques basées sur les prix et la production agricole pour un conseil stratégique approfondi",
+        "Accès à des indicateurs fiables : production par produit/année/ville et évolution des prix",
+        "Observation croisée de l’offre agricole et des tendances de consommation",
+        "Application intelligente unifiant données de production et prix pour une gestion optimisée"
     ]
 }
 
 st.dataframe(data_benefices)
 
-
-# Deuxième tableau : Fonctionnalités principales
-st.write("## 📊 Fonctionnalités principales de l’application")
+# ▶️ Fonctionnalités principales des deux modules
+st.write("## 📊 Fonctionnalités principales des applications")
 
 data_fonctionnalites = {
     "Fonctionnalité": [
         "Prédiction du prix par produit, ville et date",
-        "Visualisation des tendances annuelles",
-        "Analyse comparative entre deux villes",
-        "Identification des produits les plus chers",
-        "Exploration de la distribution des prix"
+        "Visualisation des tendances de prix annuelles",
+        "Analyse comparative des prix entre deux villes",
+        "Classement des produits les plus chers",
+        "Exploration de la distribution des prix",
+        "Visualisation de la production agricole par région",
+        "Analyse de l’évolution de la production par année",
+        "Comparaison de production entre plusieurs produits ou régions"
     ],
     "Description": [
-        "Estimation du prix futur grâce à un modèle prédictif",
-        "Graphiques montrant l'évolution du prix par année",
+        "Estimation du prix futur grâce à un modèle prédictif (IA)",
+        "Graphiques montrant l'évolution des prix dans le temps",
         "Comparer les prix moyens entre deux villes sélectionnées",
-        "Classement des 10 produits les plus chers",
-        "Analyse statistique de la répartition des prix"
+        "Identifier les 10 produits les plus chers par an ou par ville",
+        "Analyse statistique de la répartition des prix alimentaires",
+        "Afficher les quantités produites selon produit/région/année",
+        "Observer les variations interannuelles de production",
+        "Comparer visuellement la production entre plusieurs zones"
     ]
 }
 
 st.dataframe(data_fonctionnalites)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
