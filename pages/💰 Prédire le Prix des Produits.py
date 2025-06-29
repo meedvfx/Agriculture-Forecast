@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 26 09:26:15 2025
 
-@author: meedz
+@author: meedvfx
 """
 
 import streamlit as st
