@@ -57,4 +57,4 @@ if st.button("Prédire la production"):
     prediction = model.predict(input_df)[0]
 
     # ✅ Affichage
-    st.success(f"🌾 La production estimée de **{produit}** en **{annee}** est de : **{prediction:,.2f} tonnes**")
+    st.success(f"🌾 La production estimée de **{produit}** en **{year}** est de : **{prediction:,.2f} tonnes**")
