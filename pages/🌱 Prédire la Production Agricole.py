@@ -32,19 +32,25 @@ df = load_data("data/dataagr.csv")
 # ✅ Préparation des sélections utilisateur
 filieres = df['Filière'].dropna().unique().tolist()
 produits = df['Produit'].dropna().unique().tolist()
-annees = sorted(df['year'].dropna().unique())
+
 
 # 🎛️ Interface utilisateur
 filiere = st.selectbox("🌱 Sélectionnez la filière :", filieres)
 produit = st.selectbox("🍊 Sélectionnez le produit :", produits)
-annee = st.selectbox("📅 Sélectionnez l'année :", annees)
+selected_date = st.date_input(
+    "📅 Sélectionnez une date (année seulement utilisée) :",
+    value=pd.to_datetime("2020-01-01"),
+    min_value=pd.to_datetime("2010-01-01"),
+    max_value=pd.to_datetime("2050-12-31")
+)
 
+year = selected_date.year
 # 📌 Prédiction
 if st.button("Prédire la production"):
     input_df = pd.DataFrame({
         "Filière": [filiere],
         "Produit": [produit],
-        "year": [annee]
+        "year": [year]
     })
 
     # 🔮 Prédiction
