@@ -17,8 +17,12 @@ st.markdown("""
 🔍 **Données sur la production agricole (en tonnes) de cultures végétales au Maroc.**
 """)
 
+@st.cache_data  
+def load_data(url):
+    df = pd.read_csv(url)
+    return df
 # 📁 Chargement du dataset
-df = pd.read_csv("data/dataarg.csv")  # Remplace par ton chemin réel
+df = load_data("data/dataarg.csv")  # Remplace par ton chemin réel
 
 # 🧹 Prétraitement
 df.columns = df.columns.str.strip().str.lower()
