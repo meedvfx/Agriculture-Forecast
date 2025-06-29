@@ -30,14 +30,14 @@ Notre mission : accompagner les entreprises marocaines dans leur transformation 
 
 ---
 
-## 🎯 Objectif du projet d’analyse & prédiction des prix
+## 🎯 Objectifs Globaux
 
 Cette application permet de :
 
-- Visualiser l'évolution des prix des produits alimentaires par ville et par année.
-- Prédire les prix futurs avec un modèle d’intelligence artificielle.
-- Comparer les prix entre différentes villes.
-- Mettre à disposition un outil interactif et simple d’utilisation pour les équipes d’analyse ou de gestion.
+- Centraliser l'information économique et agricole pour une analyse unifiée.
+- Fournir des outils de prédiction fiables pour la prise de décision stratégique.
+- Favoriser la veille économique territoriale par indicateurs régionaux et nationaux.
+- Soutenir la digitalisation du secteur agricole et la gestion intelligente des données.
 
 ---
 
