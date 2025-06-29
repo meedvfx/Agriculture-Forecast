@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun 24 15:41:11 2025
 
-@author: meedz
+@author: meedvfx
 """
 
 ##########################
