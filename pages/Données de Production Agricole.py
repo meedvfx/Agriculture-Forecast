@@ -22,7 +22,7 @@ def load_data(url):
     df = pd.read_csv(url)
     return df
 # 📁 Chargement du dataset
-df = load_data("data/dataarg.csv")  # Remplace par ton chemin réel
+df = load_data("data/dataagr.csv")  # Remplace par ton chemin réel
 
 # 🧹 Prétraitement
 df.columns = df.columns.str.strip().str.lower()
