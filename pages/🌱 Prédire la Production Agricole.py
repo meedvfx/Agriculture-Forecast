@@ -32,7 +32,7 @@ df = load_data("data/dataagr.csv")
 # ✅ Préparation des sélections utilisateur
 filieres = df['Filière'].dropna().unique().tolist()
 produits = df['Produit'].dropna().unique().tolist()
-annees = sorted(df['year'].dropna().unique().astype(int))
+annees = sorted(df['year'].dropna().unique())
 
 # 🎛️ Interface utilisateur
 filiere = st.selectbox("🌱 Sélectionnez la filière :", filieres)
