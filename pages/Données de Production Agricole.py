@@ -36,7 +36,7 @@ df = df.rename(columns={
 
 # Affichage
 st.subheader("📌 Aperçu des données")
-st.dataframe(df.head(), hide_index=True)
+st.dataframe(df.head())
 
 # 🎯 Sélections utilisateur
 produit_sel = st.selectbox("🌾 Sélectionnez un produit :", df['produit'].unique())
