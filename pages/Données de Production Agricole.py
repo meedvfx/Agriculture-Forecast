@@ -14,6 +14,7 @@ st.markdown("""
 - [Data.gov.ma](https://data.gov.ma/data/fr/dataset/production-vegetale-2010-2022)  
 - [Ministère de l’Agriculture](https://www.agriculture.gov.ma/)
 
+
 🔍 **Données sur la production agricole (en tonnes) de cultures végétales au Maroc.**
 """)
 
@@ -38,6 +39,8 @@ df = df.rename(columns={
 st.subheader("📌 Aperçu des données")
 st.dataframe(df.head(), hide_index=True)
 
+st.divider()
+
 # 🎯 Sélections utilisateur
 produit_sel = st.selectbox("🌾 Sélectionnez un produit :", df['produit'].unique())
 df_produit = df[df['produit'] == produit_sel]
@@ -50,6 +53,7 @@ ax.set_xlabel("Année")
 ax.set_ylabel("Production (Tonnes)")
 ax.set_title(f"Production annuelle de {produit_sel}")
 st.pyplot(fig)
+st.divider()
 
 # 📦 Distribution globale des productions (seaborn)
 st.subheader("📊 Distribution des quantités produites (tous produits)")
@@ -57,6 +61,7 @@ fig2, ax2 = plt.subplots()
 sns.histplot(df['production'], bins=30, kde=True, ax=ax2)
 ax2.set_title("Distribution des productions (en tonnes)")
 st.pyplot(fig2)
+st.divider()
 
 # 🏆 Top 10 produits les plus produits
 st.subheader("🏆 Top 10 des produits les plus produits")
@@ -64,6 +69,7 @@ top10 = df.groupby("produit")['production'].sum().sort_values(ascending=False).h
 fig3 = px.bar(top10, x='production', y='produit', orientation='h', color='production',
               title="Top 10 des produits agricoles par volume total")
 st.plotly_chart(fig3)
+st.divider()
 
 # 📊 Évolution des 5 produits les plus importants
 st.subheader("📈 Évolution de la production des principaux produits")
