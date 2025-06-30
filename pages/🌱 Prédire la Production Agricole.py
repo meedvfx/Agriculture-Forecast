@@ -26,10 +26,17 @@ def load_data(path):
 
 df = load_data("data/dataagr.csv")
 
+filieres = df['Filière'].dropna().unique().tolist()
 filiere = st.selectbox("🌱 Sélectionnez la filière :", filieres)
 
-produits_filtres = df[df['Filière'] == filiere]['Produit'].unique().tolist()
+produits_filtres = df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist()
+
+if not produits_filtres:
+    st.warning("Aucun produit disponible pour cette filière")
+    st.stop()
+
 produit = st.selectbox("🍊 Sélectionnez le produit :", produits_filtres)
+
 selected_date = st.date_input(
     "📅 Sélectionnez une date (année seulement utilisée) :",
     value=pd.to_datetime("2020-01-01"),
