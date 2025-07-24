@@ -19,7 +19,7 @@ st.write("Cette application utilise un modèle de Machine Learning avancé pour 
 st.divider()
 
 # =============================================================================
-# Chargement du modèle et des données
+# Chargement du modèle et des données (VERSION FINALE ROBUSTE)
 # =============================================================================
 
 @st.cache_resource
@@ -37,31 +37,42 @@ def load_model():
         return None
 
 @st.cache_data
-def load_data(path):
-    """Charge et prépare les données depuis un fichier CSV de manière robuste."""
+def load_data():
+    """
+    Charge et prépare les données depuis un fichier CSV de manière très robuste.
+    Tente de trouver le fichier de données à plusieurs emplacements.
+    """
+    paths_to_try = ["dataagr.csv", "data/dataagr.csv"]
+    data = None
+    loaded_path = None
+
+    for path in paths_to_try:
+        try:
+            data = pd.read_csv(path)
+            loaded_path = path
+            break 
+        except FileNotFoundError:
+            continue
+
+    if data is None:
+        st.error(f"Fichier de données introuvable. Assurez-vous que 'dataagr.csv' se trouve dans le dossier principal ou dans un sous-dossier 'data'.")
+        return None
+    
+    st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
+
     try:
-        data = pd.read_csv(path)
-        # --- Nettoyage robuste de la colonne 'year' (CORRECTION FINALE) ---
-        # Cette méthode est la plus sûre pour gérer les formats de date variés.
-        # 1. Tente de convertir la colonne en format date. Les erreurs deviendront NaT (Not a Time).
+        # --- Nettoyage robuste de la colonne 'year' (identique au notebook) ---
         data['year'] = pd.to_datetime(data['year'], errors='coerce')
-        
-        # 2. Supprime les lignes où la conversion a échoué (valeur NaT).
         data.dropna(subset=['year'], inplace=True)
-        
-        # 3. Extrait l'année de la date et la convertit en entier.
         data['year'] = data['year'].dt.year.astype(int)
         return data
-    except FileNotFoundError:
-        st.error(f"Le fichier de données '{path}' est introuvable. Vérifiez que le fichier se trouve bien dans un dossier nommé 'data'.")
-        return None
     except Exception as e:
-        st.error(f"Une erreur est survenue lors de la lecture des données : {e}")
+        st.error(f"Une erreur est survenue lors de la préparation des données : {e}")
         return None
 
-# Correction du chemin d'accès pour correspondre à la structure de votre projet
+# Chargement des données et du modèle
 model = load_model()
-df = load_data("data/dataagr.csv")
+df = load_data()
 
 if model is None or df is None or df.empty:
     st.error("Le chargement des données ou du modèle a échoué. L'application ne peut pas continuer.")
@@ -98,7 +109,7 @@ current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
     min_value=int(min_year),
-    max_value=current_year + 20,
+    max_value=current_year + 30, # Augmentation de la portée
     value=current_year
 )
 
@@ -123,14 +134,11 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     st.dataframe(input_df)
 
     try:
-        # 1. Prédire la valeur transformée (logarithmique)
+        # Le modèle a été entraîné sur le log de la production
+        # Il faut donc appliquer la transformation inverse (exponentielle)
         log_prediction = model.predict(input_df)[0]
-        
-        # 2. Appliquer la transformation inverse pour obtenir la valeur réelle
         final_prediction = np.expm1(log_prediction)
-        
-        # 3. S'assurer que le résultat n'est pas négatif
-        final_prediction = max(0, final_prediction)
+        final_prediction = max(0, final_prediction) # S'assurer de ne pas avoir de résultat négatif
 
         st.success(f"### Production prédite pour **{produit}** en **{selected_year}** :")
         st.metric(label="Résultat", value=f"{final_prediction:,.0f} Tonnes".replace(',', ' '))
