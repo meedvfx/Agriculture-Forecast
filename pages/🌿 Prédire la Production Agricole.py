@@ -4,31 +4,6 @@ import numpy as np
 import pickle
 from datetime import datetime
 import xgboost as xgb # Nécessaire pour que pickle puisse charger le modèle
-from sklearn.base import BaseEstimator, RegressorMixin # Nécessaire pour la classe personnalisée
-
-# =============================================================================
-# DÉFINITION DE LA CLASSE DU MODÈLE PERSONNALISÉ
-# =============================================================================
-# IMPORTANT : Cette classe doit être définie ici pour que pickle puisse
-# charger correctement le modèle qui a été sauvegardé depuis le notebook.
-# C'est la solution à l'erreur 'AttributeError'.
-class LogTransformedModel(BaseEstimator, RegressorMixin):
-    def __init__(self, model):
-        self.model = model
-
-    def fit(self, X, y):
-        # On transforme la cible avec log1p (log(1+y)) pour gérer les zéros
-        y_transformed = np.log1p(y)
-        self.model.fit(X, y_transformed)
-        return self
-
-    def predict(self, X):
-        # On prédit sur l'échelle log
-        log_predictions = self.model.predict(X)
-        # On retransforme les prédictions à l'échelle originale avec expm1 (exp(x)-1)
-        predictions = np.expm1(log_predictions)
-        # On s'assure qu'aucune prédiction n'est négative
-        return np.maximum(0, predictions)
 
 # =============================================================================
 # Configuration de la page
@@ -57,6 +32,9 @@ def load_model():
     except FileNotFoundError:
         st.error("Le fichier du modèle 'modele/modelagr.pkl' n'a pas été trouvé. Assurez-vous d'avoir exécuté le notebook d'entraînement final.")
         return None
+    except Exception as e:
+        st.error(f"Une erreur est survenue lors du chargement du modèle : {e}")
+        return None
 
 @st.cache_data
 def load_data(path):
@@ -83,16 +61,14 @@ if model is None or df is None or df.empty:
 min_year = df['year'].min()
 
 # =============================================================================
-# Interface utilisateur (Widgets Streamlit)
+# Interface utilisateur
 # =============================================================================
 
 st.subheader("Veuillez faire vos sélections :")
 
-# 1. Sélection de la filière
 filieres = sorted(df['Filière'].dropna().unique().tolist())
 filiere = st.selectbox("1. Sélectionnez la filière :", filieres)
 
-# 2. Sélection du produit (filtré par filière)
 if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
     if not produits_filtres:
@@ -106,7 +82,6 @@ else:
 if not produit:
     st.stop()
 
-# 3. Sélection de l'année
 current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
@@ -120,7 +95,6 @@ selected_year = st.number_input(
 # =============================================================================
 
 if st.button("🚀 Lancer la prédiction", type="primary"):
-    # Création du DataFrame pour la prédiction avec les bonnes caractéristiques
     time_index_value = selected_year - min_year
     time_index_sq_value = time_index_value ** 2
 
@@ -137,10 +111,17 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     st.dataframe(input_df)
 
     try:
-        prediction = model.predict(input_df)[0]
+        # 1. Prédire la valeur transformée (logarithmique)
+        log_prediction = model.predict(input_df)[0]
+        
+        # 2. Appliquer la transformation inverse pour obtenir la valeur réelle
+        final_prediction = np.expm1(log_prediction)
+        
+        # 3. S'assurer que le résultat n'est pas négatif
+        final_prediction = max(0, final_prediction)
 
         st.success(f"### Production prédite pour **{produit}** en **{selected_year}** :")
-        st.metric(label="Résultat", value=f"{prediction:,.0f} Tonnes".replace(',', ' '))
+        st.metric(label="Résultat", value=f"{final_prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
         st.error("Une erreur est survenue lors de la prédiction.")
