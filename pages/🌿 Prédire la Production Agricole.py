@@ -19,7 +19,7 @@ st.write("Cette application utilise un modèle de Machine Learning avancé pour 
 st.divider()
 
 # =============================================================================
-# Chargement du modèle et des données (VERSION FINALE ROBUSTE)
+# Chargement du modèle et des données (VERSION FINALE DÉFINITIVE)
 # =============================================================================
 
 @st.cache_resource
@@ -62,9 +62,15 @@ def load_data():
 
     try:
         # --- Nettoyage robuste de la colonne 'year' (identique au notebook) ---
-        data['year'] = pd.to_datetime(data['year'], errors='coerce')
+        # Cette méthode est la plus sûre pour gérer les formats de date variés.
+        # 1. Tente de convertir la colonne en format date/numérique. Les erreurs deviendront NaT/NaN.
+        data['year'] = pd.to_datetime(data['year'], errors='coerce').dt.year
+        
+        # 2. Supprime les lignes où la conversion a échoué.
         data.dropna(subset=['year'], inplace=True)
-        data['year'] = data['year'].dt.year.astype(int)
+        
+        # 3. Convertit en entier. Cette étape est maintenant sûre.
+        data['year'] = data['year'].astype(int)
         return data
     except Exception as e:
         st.error(f"Une erreur est survenue lors de la préparation des données : {e}")
@@ -109,7 +115,7 @@ current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
     min_value=int(min_year),
-    max_value=current_year + 30, # Augmentation de la portée
+    max_value=current_year + 30,
     value=current_year
 )
 
@@ -135,10 +141,9 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
 
     try:
         # Le modèle a été entraîné sur le log de la production
-        # Il faut donc appliquer la transformation inverse (exponentielle)
         log_prediction = model.predict(input_df)[0]
         final_prediction = np.expm1(log_prediction)
-        final_prediction = max(0, final_prediction) # S'assurer de ne pas avoir de résultat négatif
+        final_prediction = max(0, final_prediction)
 
         st.success(f"### Production prédite pour **{produit}** en **{selected_year}** :")
         st.metric(label="Résultat", value=f"{final_prediction:,.0f} Tonnes".replace(',', ' '))
