@@ -5,5 +5,4 @@ numpy
 seaborn
 matplotlib
 plotly.express
-xgboost
-lightgbm
+xgboost==2.0.3
