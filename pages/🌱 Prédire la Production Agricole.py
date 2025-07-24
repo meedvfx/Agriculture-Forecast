@@ -15,7 +15,7 @@ st.write("Cette application permet de prédire la **quantité produite (en tonne
 
 @st.cache_resource
 def load_model():
-    with open("modele/modelagri.pkl", "rb") as f:
+    with open("modele/modelagr.pkl", "rb") as f:
         return pickle.load(f)
 
 model = load_model()
