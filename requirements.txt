@@ -5,3 +5,5 @@ numpy
 seaborn
 matplotlib
 plotly.express
+xgboost
+lightgbm
