@@ -51,26 +51,47 @@ if model is None or df is None:
     st.stop()
 
 # =============================================================================
+# Section de Débogage des Données
+# =============================================================================
+with st.expander("🔍 Informations de débogage des données (Étape 1)"):
+    st.write("### Après le chargement initial du CSV :")
+    st.write("**Colonnes détectées :**", df.columns.tolist())
+    st.write("**Premières 5 lignes du DataFrame :**")
+    st.dataframe(df.head())
+    st.write(f"**Nombre total de lignes :** {len(df)}")
+
+# =============================================================================
 # Nettoyage et préparation des données - ÉTAPE CRUCIALE
 # =============================================================================
+rows_before_cleaning = len(df)
 # S'assurer que la colonne 'year' est de type numérique et sans erreurs.
-# pd.to_numeric va convertir les années en nombres. 'coerce' mettra NaN pour toute valeur invalide.
 df['year'] = pd.to_numeric(df['year'], errors='coerce')
-# On supprime les lignes où l'année n'est pas un nombre valide.
 df.dropna(subset=['year'], inplace=True)
-# On s'assure que la colonne est de type entier.
 df['year'] = df['year'].astype(int)
+rows_after_cleaning = len(df)
+
+# =============================================================================
+# Section de Débogage (Après Nettoyage)
+# =============================================================================
+with st.expander("🔍 Informations de débogage des données (Étape 2)"):
+    st.write("### Après le nettoyage de la colonne 'year' :")
+    st.write(f"**Lignes avant nettoyage :** {rows_before_cleaning}")
+    st.write(f"**Lignes après nettoyage :** {rows_after_cleaning}")
+    st.write("**Premières 5 lignes du DataFrame après nettoyage :**")
+    st.dataframe(df.head())
+st.divider()
 
 # Le modèle a été entraîné avec 'time_index' (year - min_year).
 # Nous devons reproduire ce calcul pour la prédiction.
+if df.empty:
+    st.error("Le DataFrame est vide après le nettoyage. Impossible de continuer. Veuillez vérifier la colonne 'year' de votre fichier CSV.")
+    st.stop()
+    
 min_year = df['year'].min()
-print(f"Année minimale détectée dans les données : {min_year}")
-
 
 # =============================================================================
 # Interface utilisateur (Widgets Streamlit)
 # =============================================================================
-
 st.subheader("Veuillez faire vos sélections :")
 
 # 1. Sélection de la filière
@@ -78,17 +99,22 @@ filieres = sorted(df['Filière'].dropna().unique().tolist())
 filiere = st.selectbox("1. Sélectionnez la filière :", filieres)
 
 # 2. Sélection du produit (filtré par filière)
-produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
-if not produits_filtres:
-    st.warning("Aucun produit disponible pour cette filière.")
+if filiere:
+    produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
+    if not produits_filtres:
+        st.warning("Aucun produit disponible pour cette filière.")
+        st.stop()
+    produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+else:
+    st.warning("Veuillez d'abord sélectionner une filière.")
     st.stop()
-produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+
 
 # 3. Sélection de l'année
 current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
-    min_value=min_year,
+    min_value=int(min_year),
     max_value=current_year + 20, # Permet de prédire 20 ans dans le futur
     value=current_year
 )
