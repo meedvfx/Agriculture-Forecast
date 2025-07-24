@@ -11,6 +11,7 @@ from sklearn.base import BaseEstimator, RegressorMixin # Nécessaire pour la cla
 # =============================================================================
 # IMPORTANT : Cette classe doit être définie ici pour que pickle puisse
 # charger correctement le modèle qui a été sauvegardé depuis le notebook.
+# C'est la solution à l'erreur 'AttributeError'.
 class LogTransformedModel(BaseEstimator, RegressorMixin):
     def __init__(self, model):
         self.model = model
