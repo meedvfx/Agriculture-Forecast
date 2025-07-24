@@ -1,7 +1,34 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import pickle
 from datetime import datetime
+import xgboost as xgb # Nécessaire pour que pickle puisse charger le modèle
+from sklearn.base import BaseEstimator, RegressorMixin # Nécessaire pour la classe personnalisée
+
+# =============================================================================
+# DÉFINITION DE LA CLASSE DU MODÈLE PERSONNALISÉ
+# =============================================================================
+# IMPORTANT : Cette classe doit être définie ici pour que pickle puisse
+# charger correctement le modèle qui a été sauvegardé depuis le notebook.
+# C'est la solution à l'erreur 'AttributeError'.
+class LogTransformedModel(BaseEstimator, RegressorMixin):
+    def __init__(self, model):
+        self.model = model
+
+    def fit(self, X, y):
+        # On transforme la cible avec log1p (log(1+y)) pour gérer les zéros
+        y_transformed = np.log1p(y)
+        self.model.fit(X, y_transformed)
+        return self
+
+    def predict(self, X):
+        # On prédit sur l'échelle log
+        log_predictions = self.model.predict(X)
+        # On retransforme les prédictions à l'échelle originale avec expm1 (exp(x)-1)
+        predictions = np.expm1(log_predictions)
+        # On s'assure qu'aucune prédiction n'est négative
+        return np.maximum(0, predictions)
 
 # =============================================================================
 # Configuration de la page
@@ -20,7 +47,6 @@ st.divider()
 # Chargement du modèle et des données
 # =============================================================================
 
-# Utiliser le cache pour ne charger le modèle qu'une seule fois
 @st.cache_resource
 def load_model():
     """Charge le pipeline de modèle sauvegardé."""
@@ -29,43 +55,32 @@ def load_model():
             model = pickle.load(f)
         return model
     except FileNotFoundError:
-        st.error("Le fichier du modèle 'modele/modelagr.pkl' n'a pas été trouvé. Assurez-vous d'avoir exécuté le notebook d'entraînement.")
+        st.error("Le fichier du modèle 'modele/modelagr.pkl' n'a pas été trouvé. Assurez-vous d'avoir exécuté le notebook d'entraînement final.")
         return None
 
-# Utiliser le cache pour ne charger les données qu'une seule fois
 @st.cache_data
 def load_data(path):
     """Charge et prépare les données depuis un fichier CSV."""
     try:
         data = pd.read_csv(path)
-        # --- Nettoyage robuste de la colonne 'year' (CORRIGÉ) ---
-        # La colonne 'year' contient des dates complètes (ex: '2011-01-01').
-        # On la convertit en format datetime, puis on extrait l'année.
-        data['year'] = pd.to_datetime(data['year'], errors='coerce')
-        # Supprime les lignes où la date est invalide
         data.dropna(subset=['year'], inplace=True)
-        # On garde uniquement l'année (ex: 2011) et on la convertit en entier
-        data['year'] = data['year'].dt.year.astype(int)
+        data['year'] = data['year'].astype(int)
         return data
     except FileNotFoundError:
         st.error(f"Le fichier de données '{path}' est introuvable.")
         return None
 
-# Correction du chemin d'accès au fichier de données
 model = load_model()
 df = load_data("data/dataagr.csv")
 
-# Si le chargement a échoué, on arrête l'application
 if model is None or df is None or df.empty:
-    st.error("Le chargement des données a échoué ou le fichier est vide après nettoyage. L'application ne peut pas continuer.")
+    st.error("Le chargement des données ou du modèle a échoué. L'application ne peut pas continuer.")
     st.stop()
 
 # =============================================================================
 # Calcul de l'année minimale pour le 'time_index'
 # =============================================================================
-# Cette valeur est cruciale car elle doit être la même que celle utilisée pendant l'entraînement.
 min_year = df['year'].min()
-
 
 # =============================================================================
 # Interface utilisateur (Widgets Streamlit)
@@ -86,20 +101,17 @@ if filiere:
     else:
         produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
-    st.warning("Veuillez d'abord sélectionner une filière.")
     produit = None
 
-# On arrête si aucun produit n'est sélectionné
 if not produit:
     st.stop()
-
 
 # 3. Sélection de l'année
 current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
     min_value=int(min_year),
-    max_value=current_year + 20, # Permet de prédire 20 ans dans le futur
+    max_value=current_year + 20,
     value=current_year
 )
 
@@ -109,7 +121,6 @@ selected_year = st.number_input(
 
 if st.button("🚀 Lancer la prédiction", type="primary"):
     # Création du DataFrame pour la prédiction avec les bonnes caractéristiques
-    # Le modèle attend 'time_index' ET 'time_index_sq'
     time_index_value = selected_year - min_year
     time_index_sq_value = time_index_value ** 2
 
@@ -126,11 +137,9 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     st.dataframe(input_df)
 
     try:
-        # Le modèle attend un DataFrame avec les colonnes correspondantes
         prediction = model.predict(input_df)[0]
 
         st.success(f"### Production prédite pour **{produit}** en **{selected_year}** :")
-        # Formatage du nombre pour une meilleure lisibilité
         st.metric(label="Résultat", value=f"{prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
