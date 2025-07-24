@@ -44,7 +44,7 @@ def load_data(path):
         return None
 
 model = load_model()
-df = load_data("data/dataagr.csv")
+df = load_data("dataagr.csv")
 
 # Si le chargement a échoué, on arrête l'application
 if model is None or df is None:
@@ -61,13 +61,14 @@ with st.expander("🔍 Informations de débogage des données (Étape 1)"):
     st.write(f"**Nombre total de lignes :** {len(df)}")
 
 # =============================================================================
-# Nettoyage et préparation des données - ÉTAPE CRUCIALE
+# Nettoyage et préparation des données - ÉTAPE CRUCIALE (CORRIGÉE)
 # =============================================================================
 rows_before_cleaning = len(df)
-# S'assurer que la colonne 'year' est de type numérique et sans erreurs.
-df['year'] = pd.to_numeric(df['year'], errors='coerce')
-df.dropna(subset=['year'], inplace=True)
-df['year'] = df['year'].astype(int)
+# La colonne 'year' contient des dates complètes (ex: '2011-01-01').
+# On la convertit en format datetime, puis on extrait l'année.
+df['year'] = pd.to_datetime(df['year'], errors='coerce')
+df.dropna(subset=['year'], inplace=True) # Supprime les lignes où la date est invalide
+df['year'] = df['year'].dt.year # On garde uniquement l'année (ex: 2011)
 rows_after_cleaning = len(df)
 
 # =============================================================================
@@ -103,10 +104,15 @@ if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
     if not produits_filtres:
         st.warning("Aucun produit disponible pour cette filière.")
-        st.stop()
-    produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+        produit = None # On s'assure que produit est défini
+    else:
+        produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
     st.warning("Veuillez d'abord sélectionner une filière.")
+    produit = None # On s'assure que produit est défini
+
+# On arrête si aucun produit n'est sélectionné
+if not produit:
     st.stop()
 
 
