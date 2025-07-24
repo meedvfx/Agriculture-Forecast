@@ -15,83 +15,72 @@ st.set_page_config(
 )
 
 st.title("🌿 Prédiction de la Production Agricole (en Tonnes)")
-st.write("Cette application utilise un modèle de Machine Learning avancé pour prédire la **quantité produite (en tonnes)** selon la **filière**, le **produit** et l’**année** sélectionnée.")
+st.write("Cette application utilise un modèle de Machine Learning avancé pour prédire la **quantité produite (en tonnes)**.")
 st.divider()
 
 # =============================================================================
-# Chargement du modèle et des données (VERSION FINALE DÉFINITIVE)
+# Fonctions de chargement (VERSION LA PLUS ROBUSTE)
 # =============================================================================
 
 @st.cache_resource
 def load_model():
-    """Charge le pipeline de modèle sauvegardé."""
+    """Charge le modèle sauvegardé."""
     try:
         with open("modele/modelagr.pkl", "rb") as f:
             model = pickle.load(f)
         return model
     except FileNotFoundError:
-        st.error("Le fichier du modèle 'modele/modelagr.pkl' n'a pas été trouvé. Assurez-vous d'avoir exécuté le notebook d'entraînement final.")
+        st.error("ERREUR : Le fichier du modèle 'modele/modelagr.pkl' est introuvable.")
         return None
     except Exception as e:
-        st.error(f"Une erreur est survenue lors du chargement du modèle : {e}")
+        st.error(f"ERREUR lors du chargement du modèle : {e}")
         return None
 
 @st.cache_data
 def load_data():
-    """
-    Charge et prépare les données depuis un fichier CSV de manière très robuste.
-    Tente de trouver le fichier de données à plusieurs emplacements.
-    """
+    """Charge et nettoie les données de manière très sûre."""
+    # Tente de trouver le fichier à plusieurs emplacements communs
     paths_to_try = ["dataagr.csv", "data/dataagr.csv"]
     data = None
-    loaded_path = None
-
+    
     for path in paths_to_try:
         try:
             data = pd.read_csv(path)
-            loaded_path = path
-            break 
+            st.success(f"Fichier de données '{path}' chargé avec succès.")
+            break
         except FileNotFoundError:
             continue
 
     if data is None:
-        st.error(f"Fichier de données introuvable. Assurez-vous que 'dataagr.csv' se trouve dans le dossier principal ou dans un sous-dossier 'data'.")
+        st.error("ERREUR : Fichier de données 'dataagr.csv' introuvable.")
         return None
     
-    st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
-
     try:
-        # --- Nettoyage robuste de la colonne 'year' (identique au notebook) ---
-        # Cette méthode est la plus sûre pour gérer les formats de date variés.
-        # 1. Tente de convertir la colonne en format date/numérique. Les erreurs deviendront NaT/NaN.
-        data['year'] = pd.to_datetime(data['year'], errors='coerce').dt.year
-        
-        # 2. Supprime les lignes où la conversion a échoué.
+        # --- Nettoyage final et garanti de la colonne 'year' ---
+        # 1. Convertit en format date, les erreurs deviennent invalides (NaT)
+        data['year'] = pd.to_datetime(data['year'], errors='coerce')
+        # 2. Supprime les lignes avec des dates invalides
         data.dropna(subset=['year'], inplace=True)
-        
-        # 3. Convertit en entier. Cette étape est maintenant sûre.
-        data['year'] = data['year'].astype(int)
+        # 3. Extrait l'année et la convertit en entier (maintenant sans risque)
+        data['year'] = data['year'].dt.year.astype(int)
         return data
     except Exception as e:
-        st.error(f"Une erreur est survenue lors de la préparation des données : {e}")
+        st.error(f"ERREUR lors de la préparation des données : {e}")
         return None
 
-# Chargement des données et du modèle
+# Chargement
 model = load_model()
 df = load_data()
 
+# Arrêt de l'application si le chargement échoue
 if model is None or df is None or df.empty:
-    st.error("Le chargement des données ou du modèle a échoué. L'application ne peut pas continuer.")
+    st.error("L'application ne peut pas démarrer en raison d'une erreur de chargement.")
     st.stop()
 
 # =============================================================================
-# Calcul de l'année minimale pour le 'time_index'
+# Interface Utilisateur
 # =============================================================================
 min_year = df['year'].min()
-
-# =============================================================================
-# Interface utilisateur
-# =============================================================================
 
 st.subheader("Veuillez faire vos sélections :")
 
@@ -100,15 +89,8 @@ filiere = st.selectbox("1. Sélectionnez la filière :", filieres)
 
 if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
-    if not produits_filtres:
-        st.warning("Aucun produit disponible pour cette filière.")
-        produit = None
-    else:
-        produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+    produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
-    produit = None
-
-if not produit:
     st.stop()
 
 current_year = datetime.now().year
@@ -124,6 +106,7 @@ selected_year = st.number_input(
 # =============================================================================
 
 if st.button("🚀 Lancer la prédiction", type="primary"):
+    # Préparation des données pour le modèle
     time_index_value = selected_year - min_year
     time_index_sq_value = time_index_value ** 2
 
@@ -136,18 +119,19 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     input_df = pd.DataFrame(input_data)
 
     st.write("---")
-    st.write("Données envoyées au modèle pour prédiction :")
+    st.write("Données envoyées au modèle :")
     st.dataframe(input_df)
 
     try:
-        # Le modèle a été entraîné sur le log de la production
+        # 1. Le modèle prédit la valeur logarithmique
         log_prediction = model.predict(input_df)[0]
+        # 2. On applique la transformation inverse (exponentielle)
         final_prediction = np.expm1(log_prediction)
+        # 3. On s'assure que le résultat est positif
         final_prediction = max(0, final_prediction)
 
         st.success(f"### Production prédite pour **{produit}** en **{selected_year}** :")
         st.metric(label="Résultat", value=f"{final_prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
-        st.error("Une erreur est survenue lors de la prédiction.")
-        st.error(f"Détails de l'erreur : {e}")
+        st.error(f"Une erreur est survenue lors de la prédiction : {e}")
