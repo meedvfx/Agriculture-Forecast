@@ -38,13 +38,14 @@ def load_data(path):
     """Charge et prépare les données depuis un fichier CSV."""
     try:
         data = pd.read_csv(path)
-        # Nettoyage robuste de la colonne 'year'
-        # Convertit en numérique, les erreurs deviendront NaN (Not a Number)
-        data['year'] = pd.to_numeric(data['year'], errors='coerce')
-        # Supprime les lignes où l'année est NaN (invalide)
+        # --- Nettoyage robuste de la colonne 'year' (CORRIGÉ) ---
+        # La colonne 'year' contient des dates complètes (ex: '2011-01-01').
+        # On la convertit en format datetime, puis on extrait l'année.
+        data['year'] = pd.to_datetime(data['year'], errors='coerce')
+        # Supprime les lignes où la date est invalide
         data.dropna(subset=['year'], inplace=True)
-        # Convertit en entier maintenant que c'est sûr
-        data['year'] = data['year'].astype(int)
+        # On garde uniquement l'année (ex: 2011) et on la convertit en entier
+        data['year'] = data['year'].dt.year.astype(int)
         return data
     except FileNotFoundError:
         st.error(f"Le fichier de données '{path}' est introuvable.")
@@ -52,10 +53,11 @@ def load_data(path):
 
 # Correction du chemin d'accès au fichier de données
 model = load_model()
-df = load_data("data/dataagr.csv")
+df = load_data("dataagr.csv")
 
 # Si le chargement a échoué, on arrête l'application
-if model is None or df is None:
+if model is None or df is None or df.empty:
+    st.error("Le chargement des données a échoué ou le fichier est vide après nettoyage. L'application ne peut pas continuer.")
     st.stop()
 
 # =============================================================================
