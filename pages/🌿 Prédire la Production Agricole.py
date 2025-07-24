@@ -41,16 +41,22 @@ def load_data(path):
     """Charge et prépare les données depuis un fichier CSV de manière robuste."""
     try:
         data = pd.read_csv(path)
-        # Nettoyage robuste de la colonne 'year'
-        # 1. Convertit en numérique, les erreurs deviendront NaN (Not a Number)
-        data['year'] = pd.to_numeric(data['year'], errors='coerce')
-        # 2. Supprime les lignes où l'année est NaN (invalide)
+        # --- Nettoyage robuste de la colonne 'year' (CORRECTION FINALE) ---
+        # Cette méthode est la plus sûre pour gérer les formats de date variés.
+        # 1. Tente de convertir la colonne en format date. Les erreurs deviendront NaT (Not a Time).
+        data['year'] = pd.to_datetime(data['year'], errors='coerce')
+        
+        # 2. Supprime les lignes où la conversion a échoué (valeur NaT).
         data.dropna(subset=['year'], inplace=True)
-        # 3. Convertit en entier maintenant que c'est sûr
-        data['year'] = data['year'].astype(int)
+        
+        # 3. Extrait l'année de la date et la convertit en entier.
+        data['year'] = data['year'].dt.year.astype(int)
         return data
     except FileNotFoundError:
         st.error(f"Le fichier de données '{path}' est introuvable. Vérifiez que le fichier se trouve bien dans un dossier nommé 'data'.")
+        return None
+    except Exception as e:
+        st.error(f"Une erreur est survenue lors de la lecture des données : {e}")
         return None
 
 # Correction du chemin d'accès pour correspondre à la structure de votre projet
