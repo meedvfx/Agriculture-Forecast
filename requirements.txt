@@ -1,5 +1,8 @@
-pandas==2.2.2
-numpy==1.26.4
-scikit-learn==1.4.2
-streamlit==1.35.0
+streamlit
+scikit-learn==1.6.1
+pandas
+numpy
+seaborn
+matplotlib
+plotly.express
 xgboost==2.0.3
