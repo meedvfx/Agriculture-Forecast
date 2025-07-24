@@ -51,8 +51,16 @@ if model is None or df is None:
     st.stop()
 
 # =============================================================================
-# Calcul du 'time_index' - ÉTAPE CRUCIALE
+# Nettoyage et préparation des données - ÉTAPE CRUCIALE
 # =============================================================================
+# S'assurer que la colonne 'year' est de type numérique et sans erreurs.
+# pd.to_numeric va convertir les années en nombres. 'coerce' mettra NaN pour toute valeur invalide.
+df['year'] = pd.to_numeric(df['year'], errors='coerce')
+# On supprime les lignes où l'année n'est pas un nombre valide.
+df.dropna(subset=['year'], inplace=True)
+# On s'assure que la colonne est de type entier.
+df['year'] = df['year'].astype(int)
+
 # Le modèle a été entraîné avec 'time_index' (year - min_year).
 # Nous devons reproduire ce calcul pour la prédiction.
 min_year = df['year'].min()
