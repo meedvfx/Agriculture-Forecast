@@ -38,14 +38,19 @@ def load_data(path):
     """Charge et prépare les données depuis un fichier CSV."""
     try:
         data = pd.read_csv(path)
-        # Nettoyage de la colonne 'year'
+        # Nettoyage robuste de la colonne 'year'
+        # Convertit en numérique, les erreurs deviendront NaN (Not a Number)
+        data['year'] = pd.to_numeric(data['year'], errors='coerce')
+        # Supprime les lignes où l'année est NaN (invalide)
         data.dropna(subset=['year'], inplace=True)
+        # Convertit en entier maintenant que c'est sûr
         data['year'] = data['year'].astype(int)
         return data
     except FileNotFoundError:
         st.error(f"Le fichier de données '{path}' est introuvable.")
         return None
 
+# Correction du chemin d'accès au fichier de données
 model = load_model()
 df = load_data("data/dataagr.csv")
 
