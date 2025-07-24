@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 st.title("🌿 Prédiction de la Production Agricole (en Tonnes)")
-st.write("Cette application permet de prédire la **quantité produite (en tonnes)** selon la **filière**, le **produit** et l’**année** sélectionnée, en utilisant un modèle de Machine Learning.")
+st.write("Cette application utilise un modèle de Machine Learning avancé pour prédire la **quantité produite (en tonnes)** selon la **filière**, le **produit** et l’**année** sélectionnée.")
 st.divider()
 
 # =============================================================================
@@ -35,9 +35,12 @@ def load_model():
 # Utiliser le cache pour ne charger les données qu'une seule fois
 @st.cache_data
 def load_data(path):
-    """Charge les données depuis un fichier CSV."""
+    """Charge et prépare les données depuis un fichier CSV."""
     try:
         data = pd.read_csv(path)
+        # Nettoyage de la colonne 'year'
+        data.dropna(subset=['year'], inplace=True)
+        data['year'] = data['year'].astype(int)
         return data
     except FileNotFoundError:
         st.error(f"Le fichier de données '{path}' est introuvable.")
@@ -51,48 +54,16 @@ if model is None or df is None:
     st.stop()
 
 # =============================================================================
-# Section de Débogage des Données
+# Calcul de l'année minimale pour le 'time_index'
 # =============================================================================
-with st.expander("🔍 Informations de débogage des données (Étape 1)"):
-    st.write("### Après le chargement initial du CSV :")
-    st.write("**Colonnes détectées :**", df.columns.tolist())
-    st.write("**Premières 5 lignes du DataFrame :**")
-    st.dataframe(df.head())
-    st.write(f"**Nombre total de lignes :** {len(df)}")
-
-# =============================================================================
-# Nettoyage et préparation des données - ÉTAPE CRUCIALE (CORRIGÉE)
-# =============================================================================
-rows_before_cleaning = len(df)
-# La colonne 'year' contient des dates complètes (ex: '2011-01-01').
-# On la convertit en format datetime, puis on extrait l'année.
-df['year'] = pd.to_datetime(df['year'], errors='coerce')
-df.dropna(subset=['year'], inplace=True) # Supprime les lignes où la date est invalide
-df['year'] = df['year'].dt.year # On garde uniquement l'année (ex: 2011)
-rows_after_cleaning = len(df)
-
-# =============================================================================
-# Section de Débogage (Après Nettoyage)
-# =============================================================================
-with st.expander("🔍 Informations de débogage des données (Étape 2)"):
-    st.write("### Après le nettoyage de la colonne 'year' :")
-    st.write(f"**Lignes avant nettoyage :** {rows_before_cleaning}")
-    st.write(f"**Lignes après nettoyage :** {rows_after_cleaning}")
-    st.write("**Premières 5 lignes du DataFrame après nettoyage :**")
-    st.dataframe(df.head())
-st.divider()
-
-# Le modèle a été entraîné avec 'time_index' (year - min_year).
-# Nous devons reproduire ce calcul pour la prédiction.
-if df.empty:
-    st.error("Le DataFrame est vide après le nettoyage. Impossible de continuer. Veuillez vérifier la colonne 'year' de votre fichier CSV.")
-    st.stop()
-    
+# Cette valeur est cruciale car elle doit être la même que celle utilisée pendant l'entraînement.
 min_year = df['year'].min()
+
 
 # =============================================================================
 # Interface utilisateur (Widgets Streamlit)
 # =============================================================================
+
 st.subheader("Veuillez faire vos sélections :")
 
 # 1. Sélection de la filière
@@ -104,12 +75,12 @@ if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
     if not produits_filtres:
         st.warning("Aucun produit disponible pour cette filière.")
-        produit = None # On s'assure que produit est défini
+        produit = None
     else:
         produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
     st.warning("Veuillez d'abord sélectionner une filière.")
-    produit = None # On s'assure que produit est défini
+    produit = None
 
 # On arrête si aucun produit n'est sélectionné
 if not produit:
@@ -130,13 +101,16 @@ selected_year = st.number_input(
 # =============================================================================
 
 if st.button("🚀 Lancer la prédiction", type="primary"):
-    # Création du DataFrame pour la prédiction avec les bonnes colonnes
+    # Création du DataFrame pour la prédiction avec les bonnes caractéristiques
+    # Le modèle attend 'time_index' ET 'time_index_sq'
     time_index_value = selected_year - min_year
+    time_index_sq_value = time_index_value ** 2
 
     input_data = {
         'Filière': [filiere],
         'Produit': [produit],
-        'time_index': [time_index_value] # Utiliser 'time_index'
+        'time_index': [time_index_value],
+        'time_index_sq': [time_index_sq_value]
     }
     input_df = pd.DataFrame(input_data)
 
@@ -145,10 +119,11 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     st.dataframe(input_df)
 
     try:
-        # Le modèle attend un DataFrame avec les colonnes 'Filière', 'Produit', 'time_index'
+        # Le modèle attend un DataFrame avec les colonnes correspondantes
         prediction = model.predict(input_df)[0]
 
         st.success(f"### Production prédite pour **{produit}** en **{selected_year}** :")
+        # Formatage du nombre pour une meilleure lisibilité
         st.metric(label="Résultat", value=f"{prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
