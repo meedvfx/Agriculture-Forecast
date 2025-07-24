@@ -53,7 +53,7 @@ def load_data(path):
 
 # Correction du chemin d'accès au fichier de données
 model = load_model()
-df = load_data("dataagr.csv")
+df = load_data("data/dataagr.csv")
 
 # Si le chargement a échoué, on arrête l'application
 if model is None or df is None or df.empty:
