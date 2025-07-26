@@ -58,18 +58,6 @@ def load_data():
     
     st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
 
-    try:
-        # --- Nettoyage simple de la colonne 'year' (selon votre notebook) ---
-        # On suppose que la colonne 'year' est déjà propre et ne contient que des nombres.
-        data['year'] = data['year'].astype(int)
-        return data
-    except ValueError:
-        st.error("ERREUR : La colonne 'year' de votre fichier CSV contient des valeurs qui ne sont pas des nombres. Veuillez nettoyer le fichier.")
-        return None
-    except Exception as e:
-        st.error(f"Une erreur est survenue lors de la préparation des données : {e}")
-        return None
-
 # Chargement des données et du modèle
 model = load_model()
 df = load_data()
