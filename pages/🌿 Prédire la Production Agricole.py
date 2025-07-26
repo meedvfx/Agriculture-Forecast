@@ -84,7 +84,7 @@ else:
 current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
-    min_value=int(min_year),
+    min_value=min_year,
     max_value=current_year + 30,
     value=current_year
 )
