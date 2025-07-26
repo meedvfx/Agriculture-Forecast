@@ -18,7 +18,7 @@ st.write("Cette application prédit la quantité produite (en tonnes) selon la f
 st.divider()
 
 # =============================================================================
-# Fonctions de chargement (VERSION STABLE)
+# Fonctions de chargement (VERSION ADAPTÉE AU MODÈLE FINAL)
 # =============================================================================
 
 @st.cache_resource
@@ -37,38 +37,52 @@ def load_model():
 
 @st.cache_data
 def load_data():
-    """Charge et nettoie les données de manière sûre."""
+    """
+    Charge les données depuis un fichier CSV en s'assurant que 'year' est un entier.
+    """
     paths_to_try = ["dataagr.csv", "data/dataagr.csv"]
     data = None
-    
+    loaded_path = None
+
     for path in paths_to_try:
         try:
             data = pd.read_csv(path)
-            st.success(f"Fichier de données '{path}' chargé avec succès.")
-            break
+            loaded_path = path
+            break 
         except FileNotFoundError:
             continue
 
     if data is None:
-        st.error("ERREUR : Fichier de données 'dataagr.csv' introuvable.")
+        st.error(f"Fichier de données introuvable. Assurez-vous que 'dataagr.csv' se trouve dans le dossier principal ou dans un sous-dossier 'data'.")
         return None
     
-    # La conversion de type pour la colonne 'year' a été retirée
-    # On suppose que le fichier CSV est propre, comme dans le notebook.
-    return data
+    st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
 
-# Chargement
+    try:
+        # Assurer que la colonne 'year' est bien de type entier, comme dans le notebook
+        data.dropna(subset=['year'], inplace=True)
+        data['year'] = data['year'].astype(int)
+        return data
+    except Exception as e:
+        st.error(f"Une erreur est survenue lors de la préparation de la colonne 'year' : {e}")
+        return None
+
+# Chargement des données et du modèle
 model = load_model()
 df = load_data()
 
 if model is None or df is None or df.empty:
-    st.error("L'application ne peut pas démarrer.")
+    st.error("Le chargement des données ou du modèle a échoué. L'application ne peut pas continuer.")
     st.stop()
 
 # =============================================================================
-# Interface Utilisateur
+# Calcul de l'année minimale pour le 'time_index'
 # =============================================================================
 min_year = df['year'].min()
+
+# =============================================================================
+# Interface utilisateur
+# =============================================================================
 
 st.subheader("Veuillez faire vos sélections :")
 
@@ -77,14 +91,20 @@ filiere = st.selectbox("1. Sélectionnez la filière :", filieres)
 
 if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
-    produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+    if not produits_filtres:
+        st.warning("Aucun produit disponible pour cette filière.")
+        produit = None
+    else:
+        produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
+    produit = None
+
+if not produit:
     st.stop()
 
 current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
-    min_value=min_year,
     max_value=current_year + 30,
     value=current_year
 )
@@ -106,7 +126,7 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     input_df = pd.DataFrame(input_data)
 
     st.write("---")
-    st.write("Données envoyées au modèle :")
+    st.write("Données envoyées au modèle pour prédiction :")
     st.dataframe(input_df)
 
     try:
@@ -118,4 +138,5 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
         st.metric(label="Résultat", value=f"{prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
-        st.error(f"Une erreur est survenue lors de la prédiction : {e}")
+        st.error("Une erreur est survenue lors de la prédiction.")
+        st.error(f"Détails de l'erreur : {e}")
