@@ -18,7 +18,7 @@ st.write("Cette application prédit la quantité produite (en tonnes) selon la f
 st.divider()
 
 # =============================================================================
-# Fonctions de chargement (VERSION ADAPTÉE AU NOUVEAU MODÈLE)
+# Fonctions de chargement (VERSION ADAPTÉE AU MODÈLE FINAL)
 # =============================================================================
 
 @st.cache_resource
@@ -38,7 +38,7 @@ def load_model():
 @st.cache_data
 def load_data():
     """
-    Charge et prépare les données depuis un fichier CSV.
+    Charge les données depuis un fichier CSV en s'assurant que 'year' est un entier.
     """
     paths_to_try = ["dataagr.csv", "data/dataagr.csv"]
     data = None
@@ -57,6 +57,15 @@ def load_data():
         return None
     
     st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
+
+    try:
+        # Assurer que la colonne 'year' est bien de type entier, comme dans le notebook
+        data.dropna(subset=['year'], inplace=True)
+        data['year'] = data['year'].astype(int)
+        return data
+    except Exception as e:
+        st.error(f"Une erreur est survenue lors de la préparation de la colonne 'year' : {e}")
+        return None
 
 # Chargement des données et du modèle
 model = load_model()
@@ -96,7 +105,6 @@ if not produit:
 current_year = datetime.now().year
 selected_year = st.number_input(
     "3. Sélectionnez l'année de prédiction :",
-    min_value=int(min_year),
     max_value=current_year + 30,
     value=current_year
 )
