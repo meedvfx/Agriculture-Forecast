@@ -18,7 +18,7 @@ st.write("Cette application prédit la quantité produite (en tonnes) selon la f
 st.divider()
 
 # =============================================================================
-# Fonctions de chargement (VERSION STABLE)
+# Fonctions de chargement (VERSION ADAPTÉE AU NOUVEAU MODÈLE)
 # =============================================================================
 
 @st.cache_resource
@@ -29,7 +29,7 @@ def load_model():
             model = pickle.load(f)
         return model
     except FileNotFoundError:
-        st.error("ERREUR : Le fichier 'modele/modelagr.pkl' est introuvable.")
+        st.error("ERREUR : Le fichier du modèle 'modele/modelagr.pkl' est introuvable.")
         return None
     except Exception as e:
         st.error(f"ERREUR lors du chargement du modèle : {e}")
@@ -37,34 +37,55 @@ def load_model():
 
 @st.cache_data
 def load_data():
-    """Charge et nettoie les données de manière sûre."""
+    """
+    Charge et prépare les données depuis un fichier CSV.
+    """
     paths_to_try = ["dataagr.csv", "data/dataagr.csv"]
     data = None
-    
+    loaded_path = None
+
     for path in paths_to_try:
         try:
             data = pd.read_csv(path)
-            st.success(f"Fichier de données '{path}' chargé avec succès.")
-            break
+            loaded_path = path
+            break 
         except FileNotFoundError:
             continue
 
     if data is None:
-        st.error("ERREUR : Fichier de données 'dataagr.csv' introuvable.")
+        st.error(f"Fichier de données introuvable. Assurez-vous que 'dataagr.csv' se trouve dans le dossier principal ou dans un sous-dossier 'data'.")
+        return None
+    
+    st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
+
+    try:
+        # --- Nettoyage simple de la colonne 'year' (selon votre notebook) ---
+        # On suppose que la colonne 'year' est déjà propre et ne contient que des nombres.
+        data['year'] = data['year'].astype(int)
+        return data
+    except ValueError:
+        st.error("ERREUR : La colonne 'year' de votre fichier CSV contient des valeurs qui ne sont pas des nombres. Veuillez nettoyer le fichier.")
+        return None
+    except Exception as e:
+        st.error(f"Une erreur est survenue lors de la préparation des données : {e}")
         return None
 
-# Chargement
+# Chargement des données et du modèle
 model = load_model()
 df = load_data()
 
 if model is None or df is None or df.empty:
-    st.error("L'application ne peut pas démarrer.")
+    st.error("Le chargement des données ou du modèle a échoué. L'application ne peut pas continuer.")
     st.stop()
 
 # =============================================================================
-# Interface Utilisateur
+# Calcul de l'année minimale pour le 'time_index'
 # =============================================================================
 min_year = df['year'].min()
+
+# =============================================================================
+# Interface utilisateur
+# =============================================================================
 
 st.subheader("Veuillez faire vos sélections :")
 
@@ -73,8 +94,15 @@ filiere = st.selectbox("1. Sélectionnez la filière :", filieres)
 
 if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
-    produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+    if not produits_filtres:
+        st.warning("Aucun produit disponible pour cette filière.")
+        produit = None
+    else:
+        produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
+    produit = None
+
+if not produit:
     st.stop()
 
 current_year = datetime.now().year
@@ -90,20 +118,19 @@ selected_year = st.number_input(
 # =============================================================================
 
 if st.button("🚀 Lancer la prédiction", type="primary"):
-    # Préparation des données pour le modèle
-    # Le modèle a été entraîné avec 'Filière', 'Produit', 'year' et 'time_index'
+    # Préparation des données pour le modèle, exactement comme dans le notebook
     time_index_value = selected_year - min_year
 
     input_data = {
         'Filière': [filiere],
         'Produit': [produit],
-        'year': [selected_year], # Ajout de la colonne 'year'
-        'time_index': [time_index_value]
+        'year': [selected_year], # Le modèle a besoin de 'year'
+        'time_index': [time_index_value] # Le modèle a besoin de 'time_index'
     }
     input_df = pd.DataFrame(input_data)
 
     st.write("---")
-    st.write("Données envoyées au modèle :")
+    st.write("Données envoyées au modèle pour prédiction :")
     st.dataframe(input_df)
 
     try:
@@ -115,4 +142,5 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
         st.metric(label="Résultat", value=f"{prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
-        st.error(f"Une erreur est survenue lors de la prédiction : {e}")
+        st.error("Une erreur est survenue lors de la prédiction.")
+        st.error(f"Détails de l'erreur : {e}")
