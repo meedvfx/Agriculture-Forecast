@@ -18,7 +18,7 @@ st.write("Cette application prédit la quantité produite (en tonnes) selon la f
 st.divider()
 
 # =============================================================================
-# Fonctions de chargement (VERSION ADAPTÉE AU NOUVEAU MODÈLE)
+# Fonctions de chargement (VERSION STABLE)
 # =============================================================================
 
 @st.cache_resource
@@ -37,43 +37,38 @@ def load_model():
 
 @st.cache_data
 def load_data():
-    """
-    Charge et prépare les données depuis un fichier CSV.
-    """
+    """Charge et nettoie les données de manière sûre."""
     paths_to_try = ["dataagr.csv", "data/dataagr.csv"]
     data = None
-    loaded_path = None
-
+    
     for path in paths_to_try:
         try:
             data = pd.read_csv(path)
-            loaded_path = path
-            break 
+            st.success(f"Fichier de données '{path}' chargé avec succès.")
+            break
         except FileNotFoundError:
             continue
 
     if data is None:
-        st.error(f"Fichier de données introuvable. Assurez-vous que 'dataagr.csv' se trouve dans le dossier principal ou dans un sous-dossier 'data'.")
+        st.error("ERREUR : Fichier de données 'dataagr.csv' introuvable.")
         return None
     
-    st.success(f"Fichier de données chargé avec succès depuis : '{loaded_path}'")
+    # La conversion de type pour la colonne 'year' a été retirée
+    # On suppose que le fichier CSV est propre, comme dans le notebook.
+    return data
 
-# Chargement des données et du modèle
+# Chargement
 model = load_model()
 df = load_data()
 
 if model is None or df is None or df.empty:
-    st.error("Le chargement des données ou du modèle a échoué. L'application ne peut pas continuer.")
+    st.error("L'application ne peut pas démarrer.")
     st.stop()
 
 # =============================================================================
-# Calcul de l'année minimale pour le 'time_index'
+# Interface Utilisateur
 # =============================================================================
 min_year = df['year'].min()
-
-# =============================================================================
-# Interface utilisateur
-# =============================================================================
 
 st.subheader("Veuillez faire vos sélections :")
 
@@ -82,15 +77,8 @@ filiere = st.selectbox("1. Sélectionnez la filière :", filieres)
 
 if filiere:
     produits_filtres = sorted(df[df['Filière'] == filiere]['Produit'].dropna().unique().tolist())
-    if not produits_filtres:
-        st.warning("Aucun produit disponible pour cette filière.")
-        produit = None
-    else:
-        produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
+    produit = st.selectbox("2. Sélectionnez le produit :", produits_filtres)
 else:
-    produit = None
-
-if not produit:
     st.stop()
 
 current_year = datetime.now().year
@@ -118,7 +106,7 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
     input_df = pd.DataFrame(input_data)
 
     st.write("---")
-    st.write("Données envoyées au modèle pour prédiction :")
+    st.write("Données envoyées au modèle :")
     st.dataframe(input_df)
 
     try:
@@ -130,5 +118,4 @@ if st.button("🚀 Lancer la prédiction", type="primary"):
         st.metric(label="Résultat", value=f"{prediction:,.0f} Tonnes".replace(',', ' '))
 
     except Exception as e:
-        st.error("Une erreur est survenue lors de la prédiction.")
-        st.error(f"Détails de l'erreur : {e}")
+        st.error(f"Une erreur est survenue lors de la prédiction : {e}")
