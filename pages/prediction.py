@@ -27,11 +27,12 @@ st.divider()
 def load_model():
     """Charge le modèle sauvegardé."""
     try:
+        # Le notebook sauvegarde le modèle sous le nom 'modelagricole.pkl'
         with open("modele/modelagricole.pkl", "rb") as f:
             model = pickle.load(f)
         return model
     except FileNotFoundError:
-        st.error("ERREUR : Le fichier 'modele/modelagr.pkl' est introuvable.")
+        st.error("ERREUR : Le fichier du modèle 'modele/modelagricole.pkl' est introuvable.")
         return None
     except Exception as e:
         st.error(f"ERREUR lors du chargement du modèle : {e}")
@@ -56,7 +57,6 @@ def load_data():
         return None
     
     try:
-        data['year'] = pd.to_datetime(data['year'], errors='coerce').dt.year
         data.dropna(subset=['year'], inplace=True)
         data['year'] = data['year'].astype(int)
         data = data[data['Production_Tonnes'] > 0]
