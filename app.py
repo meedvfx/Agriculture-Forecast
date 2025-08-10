@@ -94,7 +94,7 @@ def load_forecast(path="data/prediction_2040.csv"):
         kl = k.lower()
         if kl in ("ds","date"):
             real_map[k] = "ds"
-        if kl in ("yhat","prediction","y"):
+        if kl in ("yhat","prediction","y","prediction_en_tonnes"):
             real_map[k] = "yhat"
         if kl in ("product","produit"):
             real_map[k] = "product"
