@@ -152,8 +152,8 @@ page = st.sidebar.radio("Aller à", ["Accueil", "Historique", "Prévisions"])
 
 # load once
 with st.spinner("Chargement des données..."):
-    df_hist = load_historical("data.csv")
-    df_fore = load_forecast("previsions_futures_2040.csv")
+    df_hist = load_historical("data/dataclean.csv")
+    df_fore = load_forecast("data/prediction_2040.csv")
 
 # -----------------------
 # PAGE: Accueil
