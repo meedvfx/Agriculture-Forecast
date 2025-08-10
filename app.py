@@ -109,7 +109,7 @@ def load_forecast(path="data/prediction_2040.csv"):
     # réduire à années entières (si besoin), on met la date 01-01-YYYY
     df["year"] = df["ds"].dt.year
     # keep only 2023..2040 range just in case
-    df = df[(df["year"]>=2023) & (df["year"]<=2040)]
+    df = df[(df["year"]>=2024) & (df["year"]<=2040)]
     return df
 
 def plot_matplotlib_timeseries(dates, values, title="", color="blue", figsize=(10,4)):
