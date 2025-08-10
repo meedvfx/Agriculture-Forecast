@@ -95,7 +95,7 @@ def detect_and_normalize_forecast(df_raw: pd.DataFrame) -> pd.DataFrame:
         if key in cols:
             mapping[cols[key]] = "ds"
             break
-    for key in ("yhat","prediction","prediction_value","y"):
+    for key in ("yhat","prediction","prediction_value","y", "production_tonnes"):
         if key in cols:
             mapping[cols[key]] = "yhat"
             break
