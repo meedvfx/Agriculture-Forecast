@@ -47,7 +47,7 @@ df_hist, df_fut = load_data()
 # Harmonisation colonnes
 if "Produit" not in df_hist.columns:
     st.error("La colonne 'Produit' est absente du fichier historique.")
-if "Valeur" not in df_hist.columns:
+if "Production_tonnes" not in df_hist.columns:
     st.error("La colonne 'Valeur' est absente du fichier historique.")
 
 # =========================
