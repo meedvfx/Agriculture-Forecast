@@ -13,10 +13,8 @@ def load_data():
     # Conversion date
     for col in ["Date", "date", "DATE"]:
         if col in df_hist.columns:
-            df_hist[col] = pd.to_datetime(df_hist[col])
             df_hist.rename(columns={col: "Date"}, inplace=True)
         if col in df_fut.columns:
-            df_fut[col] = pd.to_datetime(df_fut[col])
             df_fut.rename(columns={col: "Date"}, inplace=True)
 
     return df_hist, df_fut
