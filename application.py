@@ -82,8 +82,7 @@ if page == "Historique":
 # Filtrer selon la plage sélectionnée
    df_filtered = df_hist[
       (df_hist['Date'].dt.date >= date_range[0]) &
-      (df_hist['Date'].dt.date <= date_range[1])
-   ]
+      (df_hist['Date'].dt.date <= date_range[]) ]
 
     # Sélection plage de dates
     min_date, max_date = df_filtre["Date"].min(), df_filtre["Date"].max()
