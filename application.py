@@ -60,6 +60,31 @@ if page == "Historique":
     # Filtrer
     df_filtre = df_hist[df_hist["Produit"] == produit_select]
 
+
+    # Conversion de la colonne date en datetime
+    df_hist['Date'] = pd.to_datetime(df_hist['Date'], errors='coerce')
+
+# Suppression des dates invalides
+
+# Définition des bornes
+    min_date = df_hist['Date'].min().date()
+    max_date = df_hist['Date'].max().date()
+
+# Slider plage de dates
+    date_range = st.slider(
+        "Plage de dates :",
+        min_value=min_date,
+        max_value=max_date,
+        value=(min_date, max_date),
+        format="YYYY-MM-DD"
+    )
+
+# Filtrer selon la plage sélectionnée
+   df_filtered = df_hist[
+      (df_hist['Date'].dt.date >= date_range[0]) &
+      (df_hist['Date'].dt.date <= date_range[1])
+   ]
+
     # Sélection plage de dates
     min_date, max_date = df_filtre["Date"].min(), df_filtre["Date"].max()
     date_range = st.slider("Plage de dates :", min_value=min_date, max_value=max_date, value=(min_date, max_date))
