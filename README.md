@@ -34,6 +34,16 @@ An interactive **Streamlit dashboard** to analyze historical agricultural data a
 
 ---
 
+## 📂 Project Structure
+├── app.py                  # Streamlit dashboard
+├── final.ipynb             # Model training & experiments
+├── data/
+│   ├── dataclean.csv       # Cleaned historical data
+│   ├── prediction_2040.csv # Forecasted data
+├── requirements.txt
+└── README.md
+
+
 ## 🚀 Installation
 Clone the repository and install dependencies:
 ```bash
