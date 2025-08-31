@@ -37,6 +37,6 @@ An interactive **Streamlit dashboard** to analyze historical agricultural data a
 ## 🚀 Installation
 Clone the repository and install dependencies:
 ```bash
-git clone https://github.com/<your-username>/Agriculture-Forecast.git
+git clone https://github.com/meedvfx/Agriculture-Forecast.git
 cd Agriculture-Forecast
 pip install -r requirements.txt
