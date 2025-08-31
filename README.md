@@ -37,7 +37,7 @@ An interactive **Streamlit dashboard** to analyze historical agricultural data a
 ## 👨‍💻 Author
 - **Name**: Mohamed Zahzouh  
 - 🌍 Moroccan Data Science Student (AI & Data Engineering DUT)  
-- 🌐 [LinkedIn]([https://linkedin.com](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/))  
+- 🌐 [LinkedIn](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/)  
 - 📧 Contact: mohamedzahzouh2006@gmail.com
 
 
