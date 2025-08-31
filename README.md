@@ -10,7 +10,7 @@ An interactive **Streamlit dashboard** to analyze historical agricultural data a
 ## 📌 Features
 - 📊 **Historical Data Analysis**  
   - Filter by product & year range  
-  - Key statistics (mean, min, max, YoY growth)  
+  - Key statistics (mean, min, max)  
   - Interactive visualizations with Matplotlib  
   - CSV/PNG export  
 
