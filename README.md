@@ -34,14 +34,12 @@ An interactive **Streamlit dashboard** to analyze historical agricultural data a
 
 ---
 
-## 📂 Project Structure
-├── app.py                  # Streamlit dashboard
-├── final.ipynb             # Model training & experiments
-├── data/
-│   ├── dataclean.csv       # Cleaned historical data
-│   ├── prediction_2040.csv # Forecasted data
-├── requirements.txt
-└── README.md
+## 👨‍💻 Author
+- **Name**: Mohamed Zahzouh  
+- 🌍 Moroccan Data Science Student (AI & Data Engineering DUT)  
+- 🌐 [LinkedIn]([https://linkedin.com](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/))  
+- 📧 Contact: mohamedzahzouh2006@gmail.com
+
 
 
 ## 🚀 Installation
