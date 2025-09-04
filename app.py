@@ -85,7 +85,7 @@ def load_historical(path="data/dataclean2.csv"):
     return df
 
 @st.cache_data
-def load_forecast(path="data/prediction_2040.csv"):
+def load_forecast(path="data/prevision_2040.csv"):
     df = pd.read_csv(path)
     # expected columns: date/ds, product, prediction/yhat
     cols = df.columns.str.lower()
@@ -153,7 +153,7 @@ page = st.sidebar.radio("Aller à", ["Accueil", "Historique", "Prévisions"])
 # load once
 with st.spinner("Chargement des données..."):
     df_hist = load_historical("data/dataclean2.csv")
-    df_fore = load_forecast("data/prediction_2040.csv")
+    df_fore = load_forecast("data/prevision_2040.csv")
 
 # -----------------------
 # PAGE: Accueil
