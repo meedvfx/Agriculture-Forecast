@@ -12,7 +12,7 @@ st.set_page_config(page_title="Dashboard Production", layout="wide")
 # Fonctions utilitaires
 # -----------------------
 @st.cache_data
-def load_historical(path="data/dataclean.csv"):
+def load_historical(path="data/dataclean2.csv"):
     df = pd.read_csv(path)
     # On s'attend à des colonnes au minimum : ['product', 'ds' or 'date' or 'Year', 'y' or 'production' or 'value']
     # On essaye d'identifier les colonnes communes
@@ -152,7 +152,7 @@ page = st.sidebar.radio("Aller à", ["Accueil", "Historique", "Prévisions"])
 
 # load once
 with st.spinner("Chargement des données..."):
-    df_hist = load_historical("data/dataclean.csv")
+    df_hist = load_historical("data/dataclean2.csv")
     df_fore = load_forecast("data/prediction_2040.csv")
 
 # -----------------------
@@ -195,11 +195,10 @@ if page == "Historique":
             st.info("Aucune donnée pour la sélection.")
         else:
             stats = get_stats_series(df_filtered["y"].values)
-            c1,c2,c3,c4 = st.columns(4)
+            c1,c2,c3 = st.columns(3)
             c1.metric("Moyenne", f"{stats['mean']:.2f}")
             c2.metric("Min", f"{stats['min']:.2f}")
             c3.metric("Max", f"{stats['max']:.2f}")
-            c4.metric("Croissance moyenne YoY (%)", f"{stats['avg_yoy_pct']:.2f}%")
 
             # plot
             st.subheader("Graphique (Historique)")
@@ -297,5 +296,3 @@ if page == "Prévisions":
 # Footer
 # -----------------------
 st.sidebar.markdown("---")
-st.sidebar.markdown("Data: `data.csv`, Prévisions: `previsions_futures_2040.csv`")
-st.sidebar.markdown("Exécuter : `streamlit run app.py`")
