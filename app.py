@@ -195,11 +195,10 @@ if page == "Historique":
             st.info("Aucune donnée pour la sélection.")
         else:
             stats = get_stats_series(df_filtered["y"].values)
-            c1,c2,c3,c4 = st.columns(4)
+            c1,c2,c3 = st.columns(3)
             c1.metric("Moyenne", f"{stats['mean']:.2f}")
             c2.metric("Min", f"{stats['min']:.2f}")
             c3.metric("Max", f"{stats['max']:.2f}")
-            c4.metric("Croissance moyenne YoY (%)", f"{stats['avg_yoy_pct']:.2f}%")
 
             # plot
             st.subheader("Graphique (Historique)")
