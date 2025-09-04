@@ -12,7 +12,7 @@ st.set_page_config(page_title="Dashboard Production", layout="wide")
 # Fonctions utilitaires
 # -----------------------
 @st.cache_data
-def load_historical(path="data/dataclean.csv"):
+def load_historical(path="data/dataclean2.csv"):
     df = pd.read_csv(path)
     # On s'attend à des colonnes au minimum : ['product', 'ds' or 'date' or 'Year', 'y' or 'production' or 'value']
     # On essaye d'identifier les colonnes communes
