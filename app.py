@@ -12,7 +12,7 @@ st.set_page_config(page_title="Dashboard Production", layout="wide")
 # Fonctions utilitaires
 # -----------------------
 @st.cache_data
-def load_historical(path="data/dataclean2.csv"):
+def load_historical(path="data/data.csv"):
     df = pd.read_csv(path)
     # On s'attend à des colonnes au minimum : ['product', 'ds' or 'date' or 'Year', 'y' or 'production' or 'value']
     # On essaye d'identifier les colonnes communes
@@ -152,7 +152,7 @@ page = st.sidebar.radio("Aller à", ["Accueil", "Historique", "Prévisions"])
 
 # load once
 with st.spinner("Chargement des données..."):
-    df_hist = load_historical("data/dataclean2.csv")
+    df_hist = load_historical("data/data.csv")
     df_fore = load_forecast("data/prevision_2040.csv")
 
 # -----------------------
