@@ -8,9 +8,7 @@ import base64
 
 st.set_page_config(page_title="Dashboard Production", layout="wide")
 
-# -----------------------
-# Fonctions utilitaires
-# -----------------------
+
 @st.cache_data
 def load_historical(path="data/data.csv"):
     df = pd.read_csv(path)
