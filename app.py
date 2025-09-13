@@ -14,17 +14,14 @@ st.set_page_config(page_title="Dashboard Production", layout="wide")
 @st.cache_data
 def load_historical(path="data/data.csv"):
     df = pd.read_csv(path)
-    # On s'attend à des colonnes au minimum : ['product', 'ds' or 'date' or 'Year', 'y' or 'production' or 'value']
-    # On essaye d'identifier les colonnes communes
+
     cols = df.columns.str.lower()
-    # normalize known names
     mapping = {}
     if "product" in cols:
         mapping[[c for c in df.columns if c.lower()=="product"][0]] = "product"
     elif "produit" in cols:
         mapping[[c for c in df.columns if c.lower()=="produit"][0]] = "product"
 
-    # date column
     if "ds" in cols:
         mapping[[c for c in df.columns if c.lower()=="ds"][0]] = "ds"
     elif "date" in cols:
@@ -32,7 +29,6 @@ def load_historical(path="data/data.csv"):
     elif "year" in cols:
         mapping[[c for c in df.columns if c.lower()=="year"][0]] = "ds"
 
-    # value column
     if "y" in cols:
         mapping[[c for c in df.columns if c.lower()=="y"][0]] = "y"
     elif "production" in cols:
@@ -42,9 +38,7 @@ def load_historical(path="data/data.csv"):
     elif "tonnes" in cols:
         mapping[[c for c in df.columns if c.lower()=="tonnes"][0]] = "y"
 
-    # apply mapping safely
-    # mapping keys are lists because we used list comprehensions; normalize properly
-    # rebuild mapping properly
+
     real_map = {}
     for k in df.columns:
         kl = k.lower()
@@ -56,19 +50,14 @@ def load_historical(path="data/data.csv"):
             real_map[k] = "y"
     df = df.rename(columns=real_map)
 
-    # Ensure ds exists
     if "ds" not in df.columns:
         st.error("Impossible de trouver la colonne de date dans data.csv (nom attendu: ds/date/year).")
         return pd.DataFrame(columns=["product","ds","y"])
 
-    # Convertir ds en datetime (si year only, on force 01-01)
     try:
-        # si année seulement (ex : 1986), to_datetime gère
         df["ds"] = pd.to_datetime(df["ds"], errors="coerce", dayfirst=False)
-        # si conversion échoue mais valeurs comme '1986', faire format='%Y'
         mask_na = df["ds"].isna()
         if mask_na.any():
-            # essayer en format année
             try:
                 df.loc[mask_na, "ds"] = pd.to_datetime(df.loc[mask_na, "ds"].astype(str), format="%Y", errors="coerce")
             except Exception:
@@ -76,10 +65,8 @@ def load_historical(path="data/data.csv"):
     except Exception:
         pass
 
-    # garder colonnes utiles
     df = df[["product","ds","y"]].dropna(subset=["product","ds","y"])
     df = df.sort_values(["product","ds"])
-    # for safety cast numeric
     df["y"] = pd.to_numeric(df["y"], errors="coerce")
     df = df.dropna(subset=["y"])
     return df
@@ -87,7 +74,6 @@ def load_historical(path="data/data.csv"):
 @st.cache_data
 def load_forecast(path="data/prevision_2040.csv"):
     df = pd.read_csv(path)
-    # expected columns: date/ds, product, prediction/yhat
     cols = df.columns.str.lower()
     real_map = {}
     for k in df.columns:
@@ -106,9 +92,7 @@ def load_forecast(path="data/prevision_2040.csv"):
     df["yhat"] = pd.to_numeric(df["yhat"], errors="coerce")
     df = df.dropna(subset=["ds","yhat","product"])
     df = df.sort_values(["product","ds"])
-    # réduire à années entières (si besoin), on met la date 01-01-YYYY
     df["year"] = df["ds"].dt.year
-    # keep only 2023..2040 range just in case
     df = df[(df["year"]>=2024) & (df["year"]<=2040)]
     return df
 
@@ -128,10 +112,8 @@ def get_stats_series(df_series):
     mean = np.mean(arr)
     mn = np.min(arr)
     mx = np.max(arr)
-    # CAGR-like average annual growth (geometric) if years >1 and positives
     try:
         years = len(arr)
-        # better: compute year-on-year percentage mean
         yoy = np.diff(arr) / (arr[:-1] + 1e-9)
         mean_yoy = np.mean(yoy) * 100
     except Exception:
@@ -144,20 +126,15 @@ def fig_to_bytes(fig):
     buf.seek(0)
     return buf
 
-# -----------------------
-# Chargement des données
-# -----------------------
+
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Aller à", ["Accueil", "Historique", "Prévisions"])
 
-# load once
 with st.spinner("Chargement des données..."):
     df_hist = load_historical("data/data.csv")
     df_fore = load_forecast("data/prevision_2040.csv")
 
-# -----------------------
-# PAGE: Accueil
-# -----------------------
+
 if page == "Accueil":
     st.title("Dashboard — Production & Prévisions")
     st.markdown("""
@@ -168,28 +145,22 @@ if page == "Accueil":
     st.write("Sélectionnez une page dans la barre latérale pour visualiser les données historiques ou les prévisions futures.")
     st.markdown("**Fonctionnalités** : filtres par produit, export CSV, téléchargements d'images (matplotlib).")
 
-# -----------------------
-# PAGE: Historique
-# -----------------------
 if page == "Historique":
     st.header("Données historiques")
     if df_hist.empty:
         st.warning("Aucune donnée historique chargée (vérifie data.csv).")
     else:
-        # selectors
         produits = sorted(df_hist["product"].unique())
         sel_product = st.selectbox("Choisir un produit", ["Tous les produits"] + produits, index=1 if len(produits)>0 else 0)
         min_year = int(df_hist["ds"].dt.year.min())
         max_year = int(df_hist["ds"].dt.year.max())
         year_range = st.slider("Plage d'années", min_year, max_year, (min_year, max_year))
 
-        # filter
         df_filtered = df_hist.copy()
         if sel_product != "Tous les produits":
             df_filtered = df_filtered[df_filtered["product"]==sel_product]
         df_filtered = df_filtered[(df_filtered["ds"].dt.year>=year_range[0]) & (df_filtered["ds"].dt.year<=year_range[1])]
 
-        # stats
         st.subheader("Statistiques")
         if df_filtered.empty:
             st.info("Aucune donnée pour la sélection.")
@@ -200,9 +171,7 @@ if page == "Historique":
             c2.metric("Min", f"{stats['min']:.2f}")
             c3.metric("Max", f"{stats['max']:.2f}")
 
-            # plot
             st.subheader("Graphique (Historique)")
-            # aggregate per year to have yearly ticks
             df_plot = df_filtered.copy()
             df_plot["year"] = df_plot["ds"].dt.year
             df_year = df_plot.groupby("year", as_index=False)["y"].sum()
@@ -211,21 +180,16 @@ if page == "Historique":
                                             color="blue")
             st.pyplot(fig)
 
-            # download image
             buf = fig_to_bytes(fig)
             st.download_button("Télécharger le graphique (PNG)", data=buf, file_name="historique.png", mime="image/png")
 
-            # table
             st.subheader("Tableau")
             st.dataframe(df_filtered.sort_values("ds").reset_index(drop=True))
 
-            # export csv
             csv_bytes = df_filtered.to_csv(index=False).encode("utf-8")
             st.download_button("Télécharger données filtrées (CSV)", data=csv_bytes, file_name="historique_filtre.csv", mime="text/csv")
 
-# -----------------------
-# PAGE: Prévisions
-# -----------------------
+
 if page == "Prévisions":
     st.header("Prévisions futures (2023 → 2040)")
     if df_fore.empty:
@@ -234,14 +198,11 @@ if page == "Prévisions":
         produits_f = sorted(df_fore["product"].unique())
         sel_product_f = st.selectbox("Choisir un produit (prévision)", ["Tous les produits"] + produits_f, index=1 if len(produits_f)>0 else 0)
 
-        # filter
         dff = df_fore.copy()
         if sel_product_f != "Tous les produits":
             dff = dff[dff["product"]==sel_product_f]
-        # aggregate yearly (should already be yearly)
         df_year_f = dff.groupby(dff:=dff["ds"].dt.year).agg({"yhat":"sum"}).reset_index().rename(columns={dff.name:"year"})
 
-        # stats on forecast per product
         st.subheader("Statistiques prévisionnelles")
         if df_year_f.empty:
             st.info("Aucune prévision pour la sélection.")
@@ -252,7 +213,6 @@ if page == "Prévisions":
             c2.metric("Production min prévue", f"{stats_f['min']:.2f}")
             c3.metric("Production max prévue", f"{stats_f['max']:.2f}")
 
-            # plot forecast
             st.subheader("Graphique (Prévision)")
             fig2 = plot_matplotlib_timeseries(df_year_f["year"], df_year_f["yhat"],
                                             title=f"Prévision 2023→2040 — {sel_product_f if sel_product_f!='Tous les produits' else 'Tous produits'}",
@@ -261,19 +221,15 @@ if page == "Prévisions":
             buf2 = fig_to_bytes(fig2)
             st.download_button("Télécharger le graphique prévision (PNG)", data=buf2, file_name="prevision.png", mime="image/png")
 
-            # table
             st.subheader("Tableau des prévisions (années)")
             st.dataframe(df_year_f.rename(columns={"year":"date","yhat":"prediction"}).reset_index(drop=True))
 
-            # export csv
             csv_f = df_year_f.rename(columns={"year":"date","yhat":"prediction"})
             csv_bytes_f = csv_f.to_csv(index=False).encode("utf-8")
             st.download_button("Télécharger prévisions (CSV)", data=csv_bytes_f, file_name="previsions_2023_2040.csv", mime="text/csv")
 
-        # Numeric comparison: last historical vs first forecast (if product exists in both)
         st.markdown("---")
         st.subheader("Comparaison (numérique) : dernier historique vs première prévision")
-        # compute
         if sel_product_f != "Tous les produits":
             hist_prod = df_hist[df_hist["product"]==sel_product_f]
             last_hist_row = hist_prod.sort_values("ds").tail(1)
@@ -292,7 +248,5 @@ if page == "Prévisions":
         else:
             st.info("Sélectionne un produit spécifique pour la comparaison numérique.")
 
-# -----------------------
-# Footer
-# -----------------------
+
 st.sidebar.markdown("---")
