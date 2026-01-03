@@ -120,7 +120,6 @@ Agriculture-Forecast/
 
 Ce projet a été développé par **Mohamed ZAHZOUH**.
 
-- 🎓 **Profil** : Étudiant en Data Science (DUT Intelligence Artificielle & Ingénierie des Données).
 - 🌍 **LinkedIn** : [Mohamed ZAHZOUH](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/)
 - 📧 **Contact** : [mohamedzahzouh2006@gmail.com](mailto:mohamedzahzouh2006@gmail.com)
 
