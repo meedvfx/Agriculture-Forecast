@@ -32,6 +32,27 @@ Tableau de bord interactif **Streamlit** pour analyser les données agricoles hi
 
 ---
 
+## 📂 Structure du Projet
+```
+Project/
+├── app.py                # Application principale Streamlit
+├── utils/                # Modules utilitaires
+│   ├── data_loader.py    # Chargement et traitement des données
+│   └── plots.py          # Fonctions de visualisation
+├── data/                 # Dossier de données (CSV)
+├── modele/               # Dossier pour les notebooks/modèles
+└── requirements.txt      # Dépendances Python
+```
+
+
+## 🚀 Installation
+Clonez le dépôt et installez les dépendances : 
+```bash
+pip install -r requirements.txt
+```
+
+---
+
 ## 👨‍💻 Auteur
 - **Nom** : Mohamed ZAHZOUH  
 - 🌍 Étudiant en Data Science (DUT Intelligence Artificielle & Ingénierie des Données)
@@ -40,9 +61,3 @@ Tableau de bord interactif **Streamlit** pour analyser les données agricoles hi
 
 
 
-## 🚀 Installation
-Clonez le dépôt et installez les dépendances : 
-```bash
-git clone https://github.com/meedvfx/Agriculture-Forecast.git
-cd Agriculture-Forecast
-pip install -r requirements.txt
