@@ -12,13 +12,13 @@ Ce projet utilise **Facebook Prophet** pour les modèles de séries temporelles 
 
 ## 📑 Table des Matières
 
-- [Aperçu](#-aperçu)
-- [Fonctionnalités Principales](#-fonctionnalités-principales)
-- [Technologies Utilisées](#-technologies-utilisées)
-- [Structure du Projet](#-structure-du-projet)
-- [Installation et Configuration](#-installation-et-configuration)
-- [Utilisation](#-utilisation)
-- [Auteur](#-auteur)
+- [Aperçu](#aperçu)
+- [Fonctionnalités Principales](#fonctionnalités-principales)
+- [Technologies Utilisées](#technologies-utilisées)
+- [Structure du Projet](#structure-du-projet)
+- [Installation et Configuration](#installation-et-configuration)
+- [Utilisation](#utilisation)
+- [Auteur](#auteur)
 
 ---
 
