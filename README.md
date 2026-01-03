@@ -12,21 +12,25 @@ Ce projet utilise **Facebook Prophet** pour les modèles de séries temporelles 
 
 ## 📑 Table des Matières
 
-- [Aperçu](#aperçu)
-- [Fonctionnalités Principales](#fonctionnalités-principales)
-- [Technologies Utilisées](#technologies-utilisées)
-- [Structure du Projet](#structure-du-projet)
-- [Installation et Configuration](#installation-et-configuration)
+- [Aperçu](#apercu)
+- [Fonctionnalités Principales](#principales)
+- [Technologies Utilisées](#technologies)
+- [Structure du Projet](#structure)
+- [Installation et Configuration](#installation)
 - [Utilisation](#utilisation)
 - [Auteur](#auteur)
 
 ---
+
+<div id="apercu"></div>
 
 ## 📖 Aperçu
 
 L'objectif de ce projet est de fournir aux analystes, agriculteurs et décideurs un outil simple pour visualiser l'évolution des récoltes et anticiper les productions futures jusqu'en **2040**. L'application traite des données historiques, calcule des statistiques clés et génère des prévisions fiables grâce à des modèles de machine learning pré-entraînés.
 
 ---
+
+<div id="principales"></div>
 
 ## 🚀 Fonctionnalités Principales
 
@@ -48,6 +52,8 @@ L'objectif de ce projet est de fournir aux analystes, agriculteurs et décideurs
 
 ---
 
+<div id="technologies"></div>
+
 ## ⚙️ Technologies Utilisées
 - **Langage** : Python 3.9+
 - **Interface Web** : Streamlit
@@ -56,6 +62,8 @@ L'objectif de ce projet est de fournir aux analystes, agriculteurs et décideurs
 - **Machine Learning** : Facebook Prophet, Scikit-learn, XGBoost
 
 ---
+
+<div id="structure"></div>
 
 ## 📂 Structure du Projet
 
@@ -76,6 +84,8 @@ Project/
 ```
 
 ---
+
+<div id="installation"></div>
 
 ## 🚀 Installation et Configuration
 
@@ -100,6 +110,8 @@ Suivez ces étapes pour lancer le projet en local :
 
 ---
 
+<div id="utilisation"></div>
+
 ## 🖥️ Utilisation
 
 Une fois l'application lancée, votre navigateur s'ouvrira sur le tableau de bord local.
@@ -109,6 +121,8 @@ Une fois l'application lancée, votre navigateur s'ouvrira sur le tableau de bor
 3. **Prévisions** : Consultez les projections futures et comparez-les aux dernières données connues.
 
 ---
+
+<div id="auteur"></div>
 
 ## 👨‍💻 Auteur
 
