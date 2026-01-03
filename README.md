@@ -103,7 +103,7 @@ Suivez ces étapes pour lancer le projet en local :
 
 ## 🖥️ Utilisation
 
-Une fois l'application lancée, votre navigateur s'ouvrira sur le tableau de bord local (généralement `http://localhost:8501`).
+Une fois l'application lancée, votre navigateur s'ouvrira sur le tableau de bord local.
 
 1. **Barre Latérale** : Utilisez le menu pour naviguer entre "Accueil", "Historique" et "Prévisions".
 2. **Historique** : Sélectionnez un produit pour voir sa courbe de production passée.
@@ -112,7 +112,15 @@ Une fois l'application lancée, votre navigateur s'ouvrira sur le tableau de bor
 ---
 
 ## 👨‍💻 Auteur
-- **Nom** : Mohamed ZAHZOUH  
-- 🌍 Étudiant en Data Science (DUT Intelligence Artificielle & Ingénierie des Données)
-- 🌐 [LinkedIn](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/)  
-- 📧 Contact: mohamedzahzouh2006@gmail.com
+
+Ce projet a été développé par **Mohamed ZAHZOUH**.
+
+- 🌍 **LinkedIn** : [Mohamed ZAHZOUH](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/)
+- 📧 **Contact** : [mohamedzahzouh2006@gmail.com](mailto:mohamedzahzouh2006@gmail.com)
+
+---
+
+<center>
+  <sub>Réalisé avec ❤️ et Python.</sub>
+</center>
+
