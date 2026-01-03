@@ -3,7 +3,6 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://agriculture-forecast.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Prophet-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 Bienvenue sur **Agriculture Forecast**, une application interactive de tableau de bord conçue pour analyser les productions agricoles historiques et prédire les tendances futures grâce à l'intelligence artificielle.
 
@@ -54,10 +53,10 @@ L'objectif de ce projet est de fournir aux analystes, agriculteurs et décideurs
 
 Ce projet repose sur une stack Python robuste orientée Data Science :
 
-- **[Streamlit](https://streamlit.io/)** : Framework pour créer l'application web interactive.
-- **[Pandas](https://pandas.pydata.org/)** : Manipulation et nettoyage des données.
-- **[Prophet](https://facebook.github.io/prophet/)** : Moteur de prévision de séries temporelles.
-- **[Matplotlib](https://matplotlib.org/)** : Génération des graphiques statistiques.
+- **Streamlit** : Framework pour créer l'application web interactive.
+- **Pandas** : Manipulation et nettoyage des données.
+- **Prophet** : Moteur de prévision de séries temporelles.
+- **Matplotlib** : Génération des graphiques statistiques.
 - **NumPy** : Calculs scientifiques performants.
 
 ---
