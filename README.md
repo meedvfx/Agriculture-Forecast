@@ -19,7 +19,7 @@ Ce projet utilise **Facebook Prophet** pour les modèles de séries temporelles 
 - [Structure du Projet](#-structure-du-projet)
 - [Installation et Configuration](#-installation-et-configuration)
 - [Utilisation](#-utilisation)
-- [Auteur](#-auteur)
+- [Auteur](#-Auteur)
 
 ---
 
