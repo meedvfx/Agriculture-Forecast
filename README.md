@@ -56,17 +56,20 @@ L'objectif de ce projet est de fournir aux analystes, agriculteurs et décideurs
 
 ---
 
-## 👨‍💻 Auteur
-- **Nom** : Mohamed ZAHZOUH  
-- 🌍 Étudiant en Data Science (DUT Intelligence Artificielle & Ingénierie des Données)
-- 🌐 [LinkedIn](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/)  
-- 📧 Contact: mohamedzahzouh2006@gmail.com
-
-
-
 ## 🚀 Installation
 Clonez le dépôt et installez les dépendances : 
 ```bash
 git clone https://github.com/meedvfx/Agriculture-Forecast.git
 cd Agriculture-Forecast
 pip install -r requirements.txt
+```
+
+---
+
+
+## 👨‍💻 Auteur
+- **Nom** : Mohamed ZAHZOUH  
+- 🌍 Étudiant en Data Science (DUT Intelligence Artificielle & Ingénierie des Données)
+- 🌐 [LinkedIn](https://www.linkedin.com/in/mohamed-zahzouh-1402a7318/)  
+- 📧 Contact: mohamedzahzouh2006@gmail.com
+
